@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STEM Công Nghệ 8: Cánh Tay Robot Thủy Lực – GV Nguyễn Thị Ánh Huệ</title>
+<style>
+  :root {
+    --navy: #0f294a;
+    --navy-dark: #091a30;
+    --teal: #0d9488;
+    --teal-light: #14b8a6;
+    --blue: #2563eb;
+    --red: #dc2626;
+    --green: #059669;
+    --amber: #d97706;
+    --purple: #7c3aed;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 14px;
+    --shadow: 0 6px 20px rgba(15, 41, 74, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 55%, #0f4c5c 100%);
+    color: #fff;
+    padding: 18px 20px 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+  }
+  .hero-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(20, 184, 166, 0.22);
+    border: 1px solid rgba(94, 234, 212, 0.45);
+    color: #99f6e4;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+  .hero h1 {
+    font-size: clamp(18px, 2.5vw, 25px);
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    line-height: 1.25;
+  }
+  .hero-sub {
+    font-size: 13.5px;
+    color: #cbd5e1;
+    margin-top: 4px;
+  }
+  .hero-meta {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-size: 13px;
+    text-align: right;
+  }
+  .hero-meta strong { color: #fde68a; }
+
+  /* Tabs Navigation */
+  .nav-wrap {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .tabs {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 10px 16px;
+    scrollbar-width: thin;
+  }
+  .tab-btn {
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    color: var(--text);
+    padding: 9px 15px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { background: #e2e8f0; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--navy), var(--teal));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1240px;
+    margin: 18px auto 36px;
+    padding: 0 16px;
+  }
+  .panel { display: none; animation: fadeIn 0.25s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Grid & Cards */
+  .grid-2 { display: grid; grid-template-columns: 1.45fr 1fr; gap: 18px; align-items: start; }
+  .grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 920px) {
+    .grid-2, .grid-equal { grid-template-columns: 1fr; }
+    .hero-meta { text-align: left; width: 100%; }
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+  }
+
+  /* Canvas Wrappers */
+  .canvas-box {
+    background: #0b1628;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #1e3a5f;
+    position: relative;
+  }
+  canvas { display: block; width: 100%; height: auto; }
+
+  /* Controls */
+  .ctrl-group {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 11px 13px;
+    margin-bottom: 10px;
+    border-left: 5px solid var(--blue);
+  }
+  .ctrl-group.ch-blue { border-left-color: var(--blue); }
+  .ctrl-group.ch-red { border-left-color: var(--red); }
+  .ctrl-group.ch-green { border-left-color: var(--green); }
+  .ctrl-group.ch-amber { border-left-color: var(--amber); }
+
+  .ctrl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .val-pill {
+    background: var(--navy);
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+  input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    accent-color: var(--teal);
+  }
+  .ch-blue input[type="range"] { accent-color: var(--blue); }
+  .ch-red input[type="range"] { accent-color: var(--red); }
+  .ch-green input[type="range"] { accent-color: var(--green); }
+  .ch-amber input[type="range"] { accent-color: var(--amber); }
+
+  /* Buttons */
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn {
+    border: none;
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s ease, opacity 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-amber { background: var(--amber); color: #fff; }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-outline { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+  .btn:hover { opacity: 0.92; }
+
+  /* KPI Metrics */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .kpi {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  .kpi-label { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  .kpi-val { font-size: 19px; font-weight: 800; color: var(--navy); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi-sub { font-size: 11px; color: var(--teal); font-weight: 600; }
+
+  /* Info / Alert boxes */
+  .notice {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-left: 4px solid var(--blue);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .notice.warn { background: #fef2f2; border-color: #fecaca; border-left-color: var(--red); color: #991b1b; }
+  .notice.ok { background: #ecfdf5; border-color: #a7f3d0; border-left-color: var(--green); color: #065f46; }
+
+  /* Form inputs */
+  select, input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--teal); }
+  label.field-lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin: 9px 0 4px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+  th { background: var(--navy); color: #fff; font-weight: 700; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* Checklist */
+  .chk-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    margin-bottom: 7px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  .chk-item.done { background: #ecfdf5; border-color: #6ee7b7; text-decoration: line-through; color: #065f46; }
+  .chk-item input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); cursor: pointer; }
+  .progress-bar { height: 11px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--green)); width: 0%; transition: width 0.3s ease; }
+
+  /* Quiz */
+  .quiz-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 11px 14px;
+    margin-bottom: 9px;
+    border-radius: 10px;
+    border: 1.5px solid #cbd5e1;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--teal); background: #f0fdfa; }
+  .quiz-opt.correct { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+  .quiz-opt.wrong { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+  .cert-box {
+    border: 4px double var(--navy);
+    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 50%, #f0fdfa 100%);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 14px;
+  }
+
+  /* Timer */
+  .timer-display {
+    font-size: 46px;
+    font-weight: 900;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    background: #f8fafc;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    margin: 8px 0;
+  }
+  .timer-display.urgent { color: var(--red); border-color: #fca5a5; background: #fef2f2; }
+
+  footer {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+
+  /* 2D Blueprint & Direct Print Styles */
+  .bp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #eff6ff 0%, #f0fdfa 100%);
+    border: 1.5px solid #99f6e4;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+  .bp-sheet-wrap {
+    background: #ffffff;
+    border: 2px solid #0f294a;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 20px rgba(15, 41, 74, 0.08);
+  }
+  .bp-svg-container {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border: 1.5px solid #334155;
+    border-radius: 6px;
+  }
+  .bp-svg-container svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hero-print-btn {
+    margin-top: 8px;
+    background: #f59e0b;
+    color: #0f172a;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);
+    transition: transform 0.12s ease;
+  }
+  .hero-print-btn:hover {
+    transform: translateY(-1px);
+    background: #fbbf24;
+  }
+
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 8mm;
+    }
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    header.hero,
+    nav.nav-wrap,
+    footer,
+    .no-print,
+    .panel:not(#tab-blueprint) {
+      display: none !important;
+    }
+    main.container {
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    #tab-blueprint {
+      display: block !important;
+    }
+    #bp-grid-layout {
+      display: block !important;
+    }
+    #bp-left-controls {
+      display: none !important;
+    }
+    .bp-sheet-wrap {
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">HỌC LIỆU SỐ STEM/STEAM</div>
+      <h1>🦾 CÁNH TAY ROBOT THỦY LỰC TỪ VẬT LIỆU TÁI CHẾ</h1>
+      <div class="hero-sub">Ứng dụng AI & Định luật Pascal – Cơ cấu biến đổi chuyển động | Chương trình GDPT 2018 – Môn Công nghệ 8</div>
+    </div>
+    <div class="hero-meta">
+      <div>Giáo viên: <strong>Nguyễn Thị Ánh Huệ</strong></div>
+      <div>Tổ Tin – Công nghệ • <strong>Trường THCS Nguyễn Du</strong></div>
+      <button class="hero-print-btn no-print" onclick="openBlueprintTabAndPrint(false)">
+        🖨️ Công Cụ In Bản Vẽ 2D Trực Tiếp
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" id="nav-btn-sim" onclick="switchTab('sim', this)">🦾 1. Phòng Thí Nghiệm Robot Ảo</button>
+    <button class="tab-btn" id="nav-btn-pascal" onclick="switchTab('pascal', this)">⚖️ 2. Máy Tính Định Luật Pascal</button>
+    <button class="tab-btn" id="nav-btn-blueprint" onclick="switchTab('blueprint', this)">📐 3. Bản Vẽ Kỹ Thuật 2D & In Trực Tiếp</button>
+    <button class="tab-btn" id="nav-btn-ai" onclick="switchTab('ai', this)">🤖 4. Trợ Lý Prompt AI & Vật Tư</button>
+    <button class="tab-btn" id="nav-btn-quiz" onclick="switchTab('quiz', this)">🎮 5. Đấu Trường Trắc Nghiệm (10 Câu)</button>
+    <button class="tab-btn" id="nav-btn-rubric" onclick="switchTab('rubric', this)">🏆 6. Thi Đấu & Chấm Rubric 100đ</button>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- ==================== TAB 1: SIMULATION ==================== -->
+  <section id="tab-sim" class="panel active">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">
+          <span>🧪 MÔ PHỎNG CÁNH TAY THỦY LỰC: GẮP VẬT LÊN & THẢ RƠI TỰ DO</span>
+          <span class="val-pill" id="simScorePill" style="background:var(--green);">Độ cao nâng: 0.0 cm</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="robotCanvas" width="760" height="460"></canvas>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Khoảng cách đặt đế (d)</div>
+            <div class="kpi-val" id="kpiBase">22.0 cm</div>
+            <div class="kpi-sub" id="kpiDistSub">Vừa phải (Chuẩn)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Góc nâng vai (Kênh 1)</div>
+            <div class="kpi-val" id="kpiShoulder">42°</div>
+            <div class="kpi-sub">Đỏ (5ml → 10ml)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Góc khuỷu tay (Kênh 2)</div>
+            <div class="kpi-val" id="kpiElbow">-68°</div>
+            <div class="kpi-sub">Xanh lá (10ml → 10ml)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Hàm kẹp & Trạng thái</div>
+            <div class="kpi-val" id="kpiClaw">Đang mở</div>
+            <div class="kpi-sub" id="kpiGrabStatus">Chưa giữ vật</div>
+          </div>
+        </div>
+        <div class="notice ok" id="simMsg">
+          🎯 <strong>Yêu cầu thực hành (Đơn giản – Dễ thao tác nhất):</strong><br>
+          1️⃣ Học sinh tự đo và đặt <b>Đế cố định</b> cách vật một khoảng vừa phải (chuẩn <b>d = 20 – 23 cm</b>).<br>
+          2️⃣ Hạ cần kẹp chặt vật ➔ Bơm <b>Xi-lanh 1 (Đỏ)</b> nhấc vật <b>vượt lên qua khỏi Vùng Xanh Lá</b> ➔ Mở ngàm (<b>Xi-lanh 3 Vàng</b>) để <b>thả vật rơi tự do từ trên cao xuống</b> (không cần hạ cần, không cần thả đúng vị trí)!
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎛️ BẢNG ĐIỀU KHIỂN ĐẶT ĐẾ & 3 XI-LANH GẮP TẠI CHỖ</div>
+
+        <!-- Chọn 1 vật duy nhất để thử nghiệm -->
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:9px 12px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <span style="font-size:13px; font-weight:700; color:var(--navy); white-space:nowrap;">📦 Chọn 01 vật để gắp:</span>
+          <select id="selSingleObj" onchange="changeSingleObject()" style="padding:6px 10px; font-size:13px; font-weight:700;">
+            <option value="box50" selected>Khối hàng vuông tiêu chuẩn (50g)</option>
+            <option value="cup30">Ly giấy / Vỏ hộp sữa tái chế (30g)</option>
+            <option value="heavy100">Khối tải trọng nặng (100g)</option>
+          </select>
+        </div>
+
+        <div class="ctrl-group ch-blue">
+          <div class="ctrl-header">
+            <span>📏 Bước 1 (HS tự đo): Khoảng cách đặt Đế tới Vật (d)</span>
+            <span class="val-pill" style="background:var(--blue);" id="lblCh1">22.0 cm (Vừa phải)</span>
+          </div>
+          <input type="range" id="slBase" min="15" max="28" step="0.5" value="22">
+          <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Đế đặt cố định (không xoay, không trượt): HS dùng thước đo khoảng cách <b>vừa phải (20 – 23 cm)</b> từ trụ đế đến vật rồi đặt cánh tay xuống bàn.</div>
+        </div>
+
+        <div class="ctrl-group ch-red">
+          <div class="ctrl-header">
+            <span>🔴 Xi-lanh 1 (Màu Đỏ): Nâng Lên / Hạ Xuống (Khớp Vai A)</span>
+            <span class="val-pill" style="background:var(--red);" id="lblCh2">42°</span>
+          </div>
+          <input type="range" id="slShoulder" min="15" max="85" value="42">
+          <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Cặp 5ml → 10ml khuếch đại lực 1,56× giúp hạ cần xuống gắp vật và <b>nhấc bổng vật vượt qua khỏi vùng xanh lá</b>.</div>
+        </div>
+
+        <div class="ctrl-group ch-green">
+          <div class="ctrl-header">
+            <span>🟢 Xi-lanh 2 (Xanh lá): Gập / Duỗi Căn Chỉnh (Khớp Khuỷu B)</span>
+            <span class="val-pill" style="background:var(--green);" id="lblCh3">-68°</span>
+          </div>
+          <input type="range" id="slElbow" min="-105" max="0" value="-68">
+          <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Căn chỉnh tầm vươn của đầu kẹp chạm tới vật trong vùng xanh lá.</div>
+        </div>
+
+        <div class="ctrl-group ch-amber">
+          <div class="ctrl-header">
+            <span>🟡 Xi-lanh 3 (Màu Vàng): Kẹp Chặt Vật / Mở Ngàm Thả Xuống</span>
+            <span class="val-pill" style="background:var(--amber);" id="lblCh4">Mở 85%</span>
+          </div>
+          <input type="range" id="slClaw" min="0" max="100" value="85">
+          <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Kéo dưới 28% để <b>kẹp chặt vật</b>; khi vật đã lên <b>qua khỏi vùng xanh lá</b>, kéo trên 55% để <b>thả vật rơi tự do</b>!</div>
+        </div>
+
+
+        <div class="btn-row">
+          <button class="btn btn-teal" id="btnRunDemo" onclick="demoAutoPick()">▶ Chạy Demo Gắp Qua Vùng Xanh Lá & Thả Rơi Tự Do</button>
+          <button class="btn btn-amber" id="btnPauseDemo" style="display:none;" onclick="togglePauseDemo()">⏸ Tạm Dừng</button>
+          <button class="btn btn-outline" onclick="resetSim()">↺ Đặt Lại Vật</button>
+          <button class="btn btn-primary" onclick="openBlueprintTabAndPrint(false)">📐 In Bản Vẽ 2D</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2: PASCAL CALCULATOR ==================== -->
+  <section id="tab-pascal" class="panel">
+    <div class="grid-equal">
+      <div class="card">
+        <div class="card-title">🧮 MÁY TÍNH ĐỊNH LUẬT PASCAL & CHỌN CỠ XI-LANH</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label class="field-lbl">Xi-lanh chủ động (Tay ấn – S<sub>1</sub>):</label>
+            <select id="syr1" onchange="calcPascal()">
+              <option value="9">Xi-lanh 3ml (Ø ≈ 9 mm)</option>
+              <option value="12" selected>Xi-lanh 5ml (Ø ≈ 12 mm) — Khuyên dùng cho Vai</option>
+              <option value="15">Xi-lanh 10ml (Ø ≈ 15 mm)</option>
+              <option value="20">Xi-lanh 20ml (Ø ≈ 20 mm)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-lbl">Xi-lanh chấp hành (Gắn khớp – S<sub>2</sub>):</label>
+            <select id="syr2" onchange="calcPascal()">
+              <option value="9">Xi-lanh 3ml (Ø ≈ 9 mm)</option>
+              <option value="12">Xi-lanh 5ml (Ø ≈ 12 mm) — Nhẹ cho Kẹp</option>
+              <option value="15" selected>Xi-lanh 10ml (Ø ≈ 15 mm) — Mạnh cho Vai</option>
+              <option value="20">Xi-lanh 20ml (Ø ≈ 20 mm)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ctrl-group ch-red" style="margin-top:12px;">
+          <div class="ctrl-header">
+            <span>👇 Lực ấn ngón tay F₁ (Newton)</span>
+            <span class="val-pill" style="background:var(--red);" id="lblF1">10 N</span>
+          </div>
+          <input type="range" id="slF1" min="2" max="25" step="1" value="10" oninput="calcPascal()">
+        </div>
+
+        <div class="ctrl-group ch-blue">
+          <div class="ctrl-header">
+            <span>📏 Hành trình ấn pít-tông h₁ (cm)</span>
+            <span class="val-pill" style="background:var(--blue);" id="lblH1">4.0 cm</span>
+          </div>
+          <input type="range" id="slH1" min="1" max="6" step="0.5" value="4" oninput="calcPascal()">
+        </div>
+
+        <label class="chk-item" style="margin-top:8px; border-color:#fca5a5; background:#fff5f5;">
+          <input type="checkbox" id="chkBubble" onchange="calcPascal()">
+          <span><strong>Mô phỏng lỗi kỹ thuật: Có 25% bọt khí trong ống dẫn!</strong> (Xem tác hại làm hao hụt hành trình & lực đẩy)</span>
+        </label>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Hệ số lợi lực (S₂ / S₁)</div>
+            <div class="kpi-val" id="resRatio" style="color:var(--teal);">1.56×</div>
+            <div class="kpi-sub">(d₂ / d₁)²</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Lực nâng đầu ra F₂</div>
+            <div class="kpi-val" id="resF2" style="color:var(--green);">15.6 N</div>
+            <div class="kpi-sub" id="resMass">≈ 1.560 g (lý thuyết)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Áp suất chất lỏng p</div>
+            <div class="kpi-val" id="resPressure">88.4 kPa</div>
+            <div class="kpi-sub">p = F₁ / S₁</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Hành trình đầu ra h₂</div>
+            <div class="kpi-val" id="resH2" style="color:var(--amber);">2.56 cm</div>
+            <div class="kpi-sub">Lợi lực ➔ thiệt đường đi</div>
+          </div>
+        </div>
+
+        <div id="pascalVerdict" class="notice ok"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 TRỰC QUAN HÓA ĐỊNH LUẬT PASCAL & CẤU HÌNH CHUẨN</div>
+        <div class="canvas-box" style="background:#f8fafc; border-color:#cbd5e1;">
+          <canvas id="pascalCanvas" width="560" height="275"></canvas>
+        </div>
+
+        <h4 style="margin-top:14px; color:var(--navy); font-size:14px;">📌 Bảng cấu hình Đế cố định & Hệ thống Xi-lanh Gắp Tại Chỗ (Công nghệ 8):</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Hạng mục / Kênh</th>
+              <th>Bộ phận trên Robot</th>
+              <th>Thông số / Cặp Xi-lanh</th>
+              <th>Vai trò kỹ thuật khi gắp & thả vật tại chỗ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--blue);">Đế cố định</strong></td>
+              <td>Đế phẳng + Đối trọng</td>
+              <td>Đặt cách vật <strong>d ≈ 22 cm</strong></td>
+              <td>HS tự đo khoảng cách vừa phải trên mặt bàn để cánh tay vươn tới tâm vật mà không bị lật đế</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--red);">Xi-lanh 1 (Đỏ)</strong></td>
+              <td>Khớp Vai A (Nâng/Hạ)</td>
+              <td><strong>5ml → 10ml</strong></td>
+              <td>Khuếch đại lực <strong>1,56×</strong> giúp nhấc bổng vật từ mặt bàn lên cao (Δh ≥ 10 cm) và hạ xuống êm</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--green);">Xi-lanh 2 (Xanh lá)</strong></td>
+              <td>Khớp Khuỷu B (Vươn/Thu)</td>
+              <td><strong>10ml → 10ml</strong></td>
+              <td>Phối hợp với khớp vai giữ cho đầu kẹp đi theo phương thẳng đứng tại chỗ</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--amber);">Xi-lanh 3 (Vàng)</strong></td>
+              <td>Hàm Kẹp C (Đóng/Mở)</td>
+              <td><strong>5ml → 5ml</strong></td>
+              <td>Kẹp chặt vật khi nhấc lên và mở ngàm thả vật xuống đúng vị trí ban đầu</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== TAB 3: 2D TECHNICAL BLUEPRINT & DIRECT PRINT TOOL ==================== -->
+  <section id="tab-blueprint" class="panel">
+    <div class="bp-toolbar no-print">
+      <div>
+        <div style="font-size:15px; font-weight:800; color:var(--navy);">
+          📐 CÔNG CỤ THIẾT KẾ & IN BẢN VẼ KỸ THUẬT 2D TRỰC TIẾP (CHUẨN VẼ KỸ THUẬT CÔNG NGHỆ 8)
+        </div>
+        <div style="font-size:12.5px; color:var(--muted);">
+          Tự động trích xuất hình chiếu 2D, sơ đồ phôi cắt bìa carton tỉ lệ chuẩn (có chấm đỏ lỗ trục <b>Ø4mm</b>) và in trực tiếp ra giấy A4 / PDF.
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0;">
+        <button class="btn btn-green" style="font-size:13.5px; padding:10px 16px; box-shadow:0 4px 12px rgba(5,150,105,0.3);" onclick="printCn8BlueprintDirectly()">
+          🖨️ In Bản Vẽ 2D Trực Tiếp Ngay (Ctrl+P)
+        </button>
+        <button class="btn btn-primary" onclick="openCn8PrintPopup()">
+          🪟 Mở Cửa Sổ In A4 Riêng
+        </button>
+        <button class="btn btn-teal" onclick="downloadCn8BlueprintPNG()">
+          🖼️ Tải Ảnh Bản Vẽ (.PNG)
+        </button>
+        <button class="btn btn-outline" onclick="downloadCn8BlueprintSVG()">
+          📥 Tải Vector (.SVG)
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-2" id="bp-grid-layout" style="grid-template-columns: 340px 1fr;">
+      <!-- Left Column: Blueprint Parameters & Customization -->
+      <div class="card no-print" id="bp-left-controls">
+        <div class="card-title">
+          <span>⚙️ THÔNG SỐ BẢN VẼ 2D & PHÔI CẮT</span>
+          <button class="btn btn-outline" style="padding:4px 9px; font-size:11.5px;" onclick="resetBpParams()">↺ Chuẩn</button>
+        </div>
+
+        <label class="field-lbl">1. Chế độ hiển thị & in Bản vẽ 2D:</label>
+        <select id="bpViewMode" onchange="renderCn8Blueprint()">
+          <option value="combined" selected>Bản vẽ Tổng hợp (Hình chiếu 2D + Phôi cắt 2D)</option>
+          <option value="cutout">Bản vẽ Phôi Cắt 2D Trải Phẳng (Áp bìa cắt 1:1)</option>
+          <option value="orthographic">Hình chiếu Đứng & Hình chiếu Bằng Lắp Ghép 2D</option>
+        </select>
+
+        <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:8px;">
+          <div>
+            <label class="field-lbl">Tên Nhóm / Người vẽ:</label>
+            <input type="text" id="bpGroupName" value="Nhóm 1 – Lớp 8/1" oninput="renderCn8Blueprint()">
+          </div>
+          <div>
+            <label class="field-lbl">Tỉ lệ bản vẽ (TCVN):</label>
+            <select id="bpScaleText" onchange="renderCn8Blueprint()">
+              <option value="1 : 1 (Phôi chuẩn)">Tỉ lệ 1 : 1</option>
+              <option value="1 : 2 (Thu nhỏ A4)" selected>Tỉ lệ 1 : 2</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="field-lbl">Chất liệu gia công phôi:</label>
+        <select id="bpMaterial" onchange="renderCn8Blueprint()">
+          <option value="Bìa carton 5 lớp (Bồi 2 lớp chéo sóng 90°)" selected>Bìa carton 5 lớp (Bồi chéo sóng 90°)</option>
+          <option value="Que gỗ đè lưỡi + Đế carton ép cứng">Que gỗ đè lưỡi + Đế carton ép</option>
+          <option value="Tấm nhựa PP Danpla / Formex dày 5mm">Tấm nhựa PP / Formex dày 5mm</option>
+        </select>
+
+        <div class="ctrl-group ch-red" style="margin-top:10px;">
+          <div class="ctrl-header">
+            <span>📏 Thanh cánh tay chính L₁ (Vai A ➔ Khuỷu B)</span>
+            <span class="val-pill" style="background:var(--red);" id="lblBpL1">180 mm</span>
+          </div>
+          <input type="range" id="bpL1" min="140" max="240" step="5" value="180" oninput="renderCn8Blueprint()">
+        </div>
+
+        <div class="ctrl-group ch-green">
+          <div class="ctrl-header">
+            <span>📏 Thanh cánh tay phụ L₂ (Khuỷu B ➔ Cổ tay C)</span>
+            <span class="val-pill" style="background:var(--green);" id="lblBpL2">150 mm</span>
+          </div>
+          <input type="range" id="bpL2" min="110" max="200" step="5" value="150" oninput="renderCn8Blueprint()">
+        </div>
+
+        <div class="ctrl-group ch-blue">
+          <div class="ctrl-header">
+            <span>📐 Chiều cao Trụ vai H_trụ & Rộng bản dầm W</span>
+            <span class="val-pill" style="background:var(--blue);" id="lblBpHW">135 / 32 mm</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+            <div>
+              <span style="font-size:11px; color:var(--muted);">Cao trụ H (mm):</span>
+              <input type="number" id="bpH" min="100" max="180" step="5" value="135" oninput="renderCn8Blueprint()">
+            </div>
+            <div>
+              <span style="font-size:11px; color:var(--muted);">Bản rộng W (mm):</span>
+              <input type="number" id="bpW" min="24" max="46" step="2" value="32" oninput="renderCn8Blueprint()">
+            </div>
+          </div>
+        </div>
+
+        <div class="ctrl-group ch-amber">
+          <div class="ctrl-header">
+            <span>⭕ Đường kính lỗ chốt trục A, B, C (Ký hiệu Ø)</span>
+            <span class="val-pill" style="background:var(--amber);" id="lblBpHole">Ø4 mm</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+            <div>
+              <span style="font-size:11px; color:var(--muted);">Cạnh đế vuông (mm):</span>
+              <input type="number" id="bpBaseW" min="150" max="250" step="10" value="200" oninput="renderCn8Blueprint()">
+            </div>
+            <div>
+              <span style="font-size:11px; color:var(--muted);">Đường kính lỗ Ø (mm):</span>
+              <input type="number" id="bpHoleD" min="3" max="8" step="0.5" value="4" oninput="renderCn8Blueprint()">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:5px; margin-top:8px; font-size:12.5px;">
+          <label style="display:flex; align-items:center; gap:7px; cursor:pointer;">
+            <input type="checkbox" id="bpShowGrid" checked onchange="renderCn8Blueprint()">
+            <span>Hiển thị lưới ô ly kỹ thuật (10 mm)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:7px; cursor:pointer;">
+            <input type="checkbox" id="bpShowDims" checked onchange="renderCn8Blueprint()">
+            <span>Hiển thị đường gióng & kích thước (mm)</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:7px; cursor:pointer;">
+            <input type="checkbox" id="bpBwPrint" onchange="renderCn8Blueprint()">
+            <span>Chế độ Nét Đen Trắng (Tiết kiệm mực in)</span>
+          </label>
+        </div>
+
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn btn-teal" style="width:100%; justify-content:center;" onclick="syncAnglesFromSimToBlueprint()">
+            🔄 Đồng Bộ Góc Cánh Tay Từ Tab 1
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Printable 2D Technical Drawing Sheet -->
+      <div class="bp-sheet-wrap" id="printable-blueprint-sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0f294a; padding-bottom:8px; margin-bottom:10px;">
+          <div>
+            <div style="font-size:11px; font-weight:800; color:var(--teal); text-transform:uppercase; letter-spacing:0.5px;">
+              HỒ SƠ BẢN VẼ KỸ THUẬT 2D & PHÔI CẮT CHI TIẾT (CHƯƠNG TRÌNH GDPT 2018 – CÔNG NGHỆ 8)
+            </div>
+            <h3 style="font-size:18px; font-weight:900; color:var(--navy); margin-top:2px;">
+              BẢN VẼ KỸ THUẬT 2D: CÁNH TAY ROBOT THỦY LỰC 4 BẬC TỰ DO (4-DOF)
+            </h3>
+          </div>
+          <div style="text-align:right; font-size:12px; color:#334155;">
+            <div>Đơn vị đo: <strong>Milimét (mm)</strong></div>
+            <div>Ký hiệu lỗ trục: <strong style="color:#dc2626;">● Chấm đỏ Ø4</strong></div>
+          </div>
+        </div>
+
+        <!-- SVG 2D Technical Drawing Container -->
+        <div class="bp-svg-container" id="cn8BpSvgWrap">
+          <svg id="cn8BlueprintSvg" viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+
+        <!-- Cutlist & Hydraulic Specification Table below Blueprint -->
+        <div style="margin-top:12px;">
+          <div style="font-size:13px; font-weight:800; color:var(--navy); margin-bottom:4px; text-transform:uppercase;">
+            📋 BẢNG KÊ PHÔI CẮT BÌA CARTON 2D & THÔNG SỐ LẮP RÁP THỦY LỰC (ĐỐI CHIẾU MÃ SỐ TRÊN BẢN VẼ):
+          </div>
+          <table id="bpCutlistTable" style="margin-top:4px; font-size:12px;">
+            <thead>
+              <tr>
+                <th style="width:55px; text-align:center;">Ký hiệu</th>
+                <th>Tên chi tiết phôi 2D</th>
+                <th>Kích thước bao (Dài × Rộng)</th>
+                <th>Số lượng cắt</th>
+                <th>Vị trí dùi lỗ trục & Ghi chú gia công (Công nghệ 8)</th>
+              </tr>
+            </thead>
+            <tbody id="bpCutlistTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: AI PROMPT & CHECKLIST ==================== -->
+  <section id="tab-ai" class="panel">
+    <div class="grid-equal">
+      <div class="card">
+        <div class="card-title">🤖 TRỢ LÝ TẠO CÂU LỆNH PROMPT AI (HOẠT ĐỘNG 1)</div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">
+          Học sinh chọn các thông số thiết kế bên dưới để tạo câu lệnh Prompt chuẩn dán vào <b>Google Gemini</b> hoặc <b>Bing Image Creator</b> nhằm phác thảo kiểu dáng sản phẩm trước khi lập bản vẽ 2D.
+        </p>
+
+        <label class="field-lbl">1. Vật liệu tái chế chủ đạo:</label>
+        <select id="aiMat" onchange="buildPrompt()">
+          <option value="bìa carton 5 lớp tái chế cứng cáp và que xiên tre">Bìa carton 5 lớp + Que xiên tre (Dễ kiếm, 0 đồng)</option>
+          <option value="que đè lưỡi bằng gỗ tái chế kết hợp đế bìa carton ép dày">Que gỗ đè lưỡi + Đế bìa carton ép (Siêu cứng)</option>
+          <option value="tấm ván gỗ mỏng tái chế (gỗ ép thừa) kết hợp chốt bu-lông M4">Gỗ ép mỏng tái chế + Bu-lông M4 (Bền đẹp cao cấp)</option>
+        </select>
+
+        <label class="field-lbl">2. Số bậc tự do & Chức năng:</label>
+        <select id="aiDof" onchange="buildPrompt()">
+          <option value="4 bậc tự do (mâm xoay đế, khớp vai nâng hạ, khớp khuỷu vươn thu và kẹp gắp 2 hàm)">4 bậc tự do (Xoay đế + Vai + Khuỷu + Kẹp gắp)</option>
+          <option value="3 bậc tự do (khớp vai nâng hạ, khớp khuỷu vươn thu và kẹp gắp 2 hàm)">3 bậc tự do (Vai + Khuỷu + Kẹp gắp – Nhanh gọn)</option>
+        </select>
+
+        <label class="field-lbl">3. Hệ thống điều khiển thủy lực:</label>
+        <select id="aiHyd" onchange="buildPrompt()">
+          <option value="4 cặp xi-lanh nhựa y tế nối ống dẫn silicon trong suốt chứa nước 4 màu Xanh dương – Đỏ – Xanh lá – Vàng gắn trên bảng điều khiển gọn gàng">Bảng điều khiển 4 xi-lanh nước 4 màu (Chuẩn trực quan)</option>
+          <option value="hệ thống xi-lanh thủy lực màu xanh lam trong suốt đồng bộ kiểu công nghiệp">Hệ thống xi-lanh nước xanh lam công nghiệp</option>
+        </select>
+
+        <label class="field-lbl">4. Phong cách hình ảnh AI xuất ra:</label>
+        <select id="aiStyle" onchange="buildPrompt()">
+          <option value="ảnh chụp sản phẩm STEM thực tế đặt trên bàn phòng thí nghiệm sáng sủa, sắc nét, góc nhìn 3/4">Ảnh chụp sản phẩm STEM thực tế trên bàn học</option>
+          <option value="bản vẽ thiết kế kỹ thuật 3D Isometric có ghi chú mũi tên các khớp chuyển động, nền trắng sạch sẽ">Bản vẽ kỹ thuật 3D Isometric có chú thích</option>
+          <option value="phong cách công nghiệp hiện đại Industrial Design, ánh sáng studio chuyên nghiệp">Phong cách Industrial Design chuyên nghiệp</option>
+        </select>
+
+        <label class="field-lbl">✨ Câu lệnh Prompt đã tự động ghép (Tiếng Việt):</label>
+        <textarea id="promptOut" rows="4" readonly style="background:#f8fafc; font-weight:600;"></textarea>
+
+        <div class="btn-row">
+          <button class="btn btn-teal" onclick="copyPrompt()">📋 Sao Chép Câu Lệnh Prompt</button>
+          <span id="copyToast" style="font-size:13px; font-weight:700; color:var(--green); display:none; align-self:center;">✅ Đã sao chép! Dán ngay vào Gemini / Bing!</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>📦 CHECKLIST KIỂM KÊ VẬT TƯ & AN TOÀN (ĐẦU TIẾT 1)</span>
+          <span class="val-pill" id="chkPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="chkBar"></div></div>
+        <div id="checklistWrap"></div>
+        <div class="notice warn">
+          ⚠️ <strong>AN TOÀN TUYỆT ĐỐI:</strong> Giáo viên kiểm tra đảm bảo <b>100% xi-lanh nhựa KHÔNG CÓ KIM TIÊM</b>; khi cắt bìa carton phải kê tấm lót và đặt súng bắn keo nóng trên giá đỡ!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 4: QUIZ GAME ==================== -->
+  <section id="tab-quiz" class="panel">
+    <div class="card" style="max-width:860px; margin:0 auto;">
+      <div class="card-title">
+        <span>🎮 ĐẤU TRƯỜNG TRẮC NGHIỆM STEM CÔNG NGHỆ 8 (10 CÂU HỎI LIÊN MÔN)</span>
+        <span class="val-pill" id="quizMetaPill" style="background:var(--teal);">Câu 1 / 10</span>
+      </div>
+
+      <div id="quizStartBox">
+        <p style="font-size:14.5px; margin-bottom:12px;">
+          Hoàn thành 10 câu hỏi trắc nghiệm liên môn <b>Công nghệ 8 – KHTN 8 (Định luật Pascal) – Toán 8 – Tin học/AI</b> để mở khóa <b>Giấy Chứng Nhận Kỹ Sư Thủy Lực Nhí</b> nộp lên Padlet cho cô <b>Nguyễn Thị Ánh Huệ</b>!
+        </p>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label class="field-lbl">Họ và tên học sinh:</label>
+            <input type="text" id="stuName" placeholder="Ví dụ: Nguyễn Minh Khang">
+          </div>
+          <div>
+            <label class="field-lbl">Lớp / Nhóm:</label>
+            <input type="text" id="stuClass" placeholder="Ví dụ: Lớp 8/1 – Nhóm 2">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="font-size:15px; padding:11px 22px;" onclick="startQuiz()">🚀 Bắt Đầu Thử Thách Ngay</button>
+      </div>
+
+      <div id="quizPlayBox" style="display:none;">
+        <div class="progress-bar"><div class="progress-fill" id="quizBar"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">
+          <span id="quizCat">Chuyên đề: Công nghệ 8</span>
+          <span id="quizScoreLive" style="color:var(--green);">Điểm: 0 / 10</span>
+        </div>
+        <h3 id="quizQText" style="font-size:16.5px; color:var(--navy); margin-bottom:14px;"></h3>
+        <div id="quizOptions"></div>
+        <div id="quizExplain" class="notice" style="display:none;"></div>
+        <div class="btn-row" style="justify-content:flex-end;">
+          <button class="btn btn-teal" id="btnNextQ" style="display:none;" onclick="nextQuestion()">Câu Tiếp Theo ➔</button>
+        </div>
+      </div>
+
+      <div id="quizResultBox" style="display:none;">
+        <div class="cert-box">
+          <div style="font-size:13px; font-weight:800; color:var(--teal); letter-spacing:1px;">TRƯỜNG THCS NGUYỄN DU • TỔ TIN – CÔNG NGHỆ</div>
+          <h2 style="font-size:24px; color:var(--navy); margin:6px 0;">🏅 GIẤY CHỨNG NHẬN HOÀN THÀNH KIẾN THỨC NỀN STEM</h2>
+          <div style="font-size:14px; color:var(--muted);">Chủ đề: Thiết kế & Chế tạo Cánh tay Robot Thủy lực (Công nghệ 8)</div>
+          <div style="font-size:22px; font-weight:900; color:var(--amber); margin:12px 0 4px;" id="certName">Học sinh</div>
+          <div style="font-size:14px; font-weight:700; color:var(--navy);" id="certClass">Lớp 8/...</div>
+          <div style="font-size:32px; font-weight:900; color:var(--green); margin:12px 0;" id="certScore">10 / 10 điểm</div>
+          <div style="font-size:13.5px; color:var(--text); margin-bottom:14px;" id="certRank"></div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:18px; padding-top:12px; border-top:1px dashed #cbd5e1; font-size:13px;">
+            <div style="text-align:left;">Ngày hoàn thành: <strong id="certDate"></strong></div>
+            <div style="text-align:right;">Giáo viên hướng dẫn:<br><strong style="color:var(--navy); font-size:14px;">Cô Nguyễn Thị Ánh Huệ</strong></div>
+          </div>
+        </div>
+        <div class="btn-row" style="justify-content:center; margin-top:14px;">
+          <button class="btn btn-primary" onclick="restartQuiz()">↺ Làm Lại Bài Trắc Nghiệm</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 5: COMPETITION & RUBRIC ==================== -->
+  <section id="tab-rubric" class="panel">
+    <div class="grid-equal">
+      <div class="card">
+        <div class="card-title">⏱️ ĐỒNG HỒ THI ĐẤU "ROBOT HYDRAULIC CHALLENGE" (60 GIÂY)</div>
+        <p style="font-size:13px; color:var(--muted);">
+          Luật thử nghiệm: Học sinh tự đo khoảng cách vừa phải (d ≈ 22 cm) đặt cố định đế cánh tay trước 01 vật mẫu, điều khiển xi-lanh thủy lực gắp nhấc vật vượt lên qua khỏi vùng xanh lá rồi mở ngàm thả vật rơi tự do xuống mặt bàn (không cần thả đúng vị trí).
+        </p>
+        <div class="timer-display" id="timerDisplay">60.0 s</div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-green" onclick="startTimer()">▶ Bắt Đầu 60s</button>
+          <button class="btn btn-amber" onclick="pauseTimer()">⏸ Tạm Dừng</button>
+          <button class="btn btn-outline" onclick="resetTimer()">↺ Đặt Lại</button>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;">
+
+        <div class="card-title" style="border:none; margin-bottom:6px;">📝 CHẤM ĐIỂM RUBRIC NHÓM (THANG 100 ĐIỂM)</div>
+        <div style="display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:8px;">
+          <div>
+            <label class="field-lbl">Tên nhóm thi đấu:</label>
+            <input type="text" id="rbGroup" placeholder="Ví dụ: Nhóm 1 – 8/1">
+          </div>
+          <div>
+            <label class="field-lbl">Số vật gắp (/3):</label>
+            <select id="rbItems">
+              <option value="3/3">3 / 3 vật (Xuất sắc)</option>
+              <option value="2/3">2 / 3 vật</option>
+              <option value="1/3">1 / 3 vật</option>
+              <option value="0/3">0 / 3 vật</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-lbl">Tải tối đa (gram):</label>
+            <input type="number" id="rbWeight" value="120" min="0" max="500">
+          </div>
+        </div>
+
+        <div class="ctrl-group ch-blue" style="margin-top:10px;">
+          <div class="ctrl-header"><span>1. Bản vẽ 2D, Tính toán Pascal & Ảnh AI (Tối đa 20đ)</span><span class="val-pill" id="rbV1">18đ</span></div>
+          <input type="range" id="rb1" min="0" max="20" value="18" oninput="updateRubricTotal()">
+        </div>
+        <div class="ctrl-group ch-red">
+          <div class="ctrl-header"><span>2. Gia công Cơ khí & Hệ thủy lực kín không bọt khí (Tối đa 30đ)</span><span class="val-pill" id="rbV2">27đ</span></div>
+          <input type="range" id="rb2" min="0" max="30" value="27" oninput="updateRubricTotal()">
+        </div>
+        <div class="ctrl-group ch-green">
+          <div class="ctrl-header"><span>3. Hiệu năng vận hành & Thi đấu gắp vật 60s (Tối đa 30đ)</span><span class="val-pill" id="rbV3">26đ</span></div>
+          <input type="range" id="rb3" min="0" max="30" value="26" oninput="updateRubricTotal()">
+        </div>
+        <div class="ctrl-group ch-amber">
+          <div class="ctrl-header"><span>4. Thẩm mỹ STEAM, Tái chế ≥80% & Thuyết trình (Tối đa 20đ)</span><span class="val-pill" id="rbV4">18đ</span></div>
+          <input type="range" id="rb4" min="0" max="20" value="18" oninput="updateRubricTotal()">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdfa; border:1.5px solid var(--teal); border-radius:11px; padding:10px 14px;">
+          <div>
+            <div style="font-size:12px; color:var(--muted); font-weight:700;">TỔNG ĐIỂM RUBRIC</div>
+            <div style="font-size:26px; font-weight:900; color:var(--navy);" id="rbTotal">89 / 100 điểm</div>
+          </div>
+          <button class="btn btn-primary" onclick="saveGroupScore()">💾 Lưu Vào Bảng Xếp Hạng</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>🏆 BẢNG XẾP HẠNG THỰC NGHIỆM & RUBRIC CÁC NHÓM</span>
+          <button class="btn btn-teal" style="padding:6px 11px; font-size:12px;" onclick="exportCSV()">📥 Xuất File CSV</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Hạng</th>
+                <th>Nhóm</th>
+                <th>Gắp vật</th>
+                <th>Tải (g)</th>
+                <th>Tổng điểm</th>
+                <th>Xếp loại</th>
+              </tr>
+            </thead>
+            <tbody id="leaderBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--muted);">Chưa có dữ liệu nhóm nào. Hãy nhập điểm bên trái và bấm Lưu!</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="btn-row" style="justify-content:flex-end; margin-top:12px;">
+          <button class="btn btn-red" style="padding:6px 11px; font-size:12px;" onclick="clearScores()">🗑 Xóa Bảng Xếp Hạng</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Học liệu số tương tác HTML5 (Chạy Offline 100%)</strong> • Chủ đề STEM: Cánh tay Robot Thủy lực – Môn Công nghệ 8<br>
+  Biên soạn: <strong>Cô Nguyễn Thị Ánh Huệ</strong> – Tổ Tin – Công nghệ – Trường Trung học cơ sở Nguyễn Du (TP. Hồ Chí Minh)
+</footer>
+
+<script>
+// ==================== AUDIO SYNTH (OFFLINE WEB AUDIO API) ====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function playTone(freq, dur=0.14, type='sine', vol=0.12) {
+  try {
+    if (!actx) actx = new AudioCtx();
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(); o.stop(actx.currentTime + dur);
+  } catch(e) {}
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const targetPanel = document.getElementById('tab-' + id);
+  if (targetPanel) targetPanel.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    const navBtn = document.getElementById('nav-btn-' + id);
+    if (navBtn) navBtn.classList.add('active');
+  }
+  if (id === 'sim') drawRobot();
+  if (id === 'pascal') calcPascal();
+  if (id === 'blueprint') renderCn8Blueprint();
+}
+
+// ==================== TAB 1: HYDRAULIC ROBOTIC ARM CANVAS SIMULATOR (GẮP VẬT QUA KHỎI VÙNG XANH LÁ & THẢ RƠI TỰ DO) ====================
+const rCanvas = document.getElementById('robotCanvas');
+const rCtx = rCanvas.getContext('2d');
+
+const slBase = document.getElementById('slBase');         // Khoảng cách đặt đế d (cm): 15 -> 28 cm (chuẩn 22 cm)
+const slShoulder = document.getElementById('slShoulder'); // Góc vai: 15 -> 85 độ
+const slElbow = document.getElementById('slElbow');       // Góc khuỷu: -105 -> 0 độ
+const slClaw = document.getElementById('slClaw');         // Độ mở kẹp: 0 -> 100%
+
+const OBJECT_CATALOG = {
+  box50:    { key: 'box50',    label: '50g',  name: 'Khối hàng 50g', w: 42, h: 42, color: '#f59e0b' },
+  cup30:    { key: 'cup30',    label: '30g',  name: 'Hộp sữa 30g',   w: 38, h: 46, color: '#38bdf8' },
+  heavy100: { key: 'heavy100', label: '100g', name: 'Khối tải 100g', w: 46, h: 44, color: '#f43f5e' }
+};
+
+const TARGET_SPOT_X = 520;     // Tâm vùng xanh lá đặt vật ban đầu
+const FLOOR_Y = 414;           // Mặt bàn
+const GREEN_ZONE_TOP_Y = 344;  // Vạch giới hạn trên của Vùng Xanh Lá (vật chỉ cần nhấc đáy qua khỏi vạch này là ĐẠT!)
+const PX_PER_CM = 13.5;
+
+let singleObj = null;
+let heldBox = null;
+let maxLiftCm = 0;
+let completedCycles = 0;
+let autoAnim = null;
+let demoPaused = false;
+let demoStepBanner = '';
+let gravityAnimId = null;
+
+function initSingleObject() {
+  const selEl = document.getElementById('selSingleObj');
+  const key = selEl ? selEl.value : 'box50';
+  const tpl = OBJECT_CATALOG[key] || OBJECT_CATALOG.box50;
+  singleObj = {
+    id: 1,
+    key: tpl.key,
+    label: tpl.label,
+    name: tpl.name,
+    w: tpl.w,
+    h: tpl.h,
+    color: tpl.color,
+    x: TARGET_SPOT_X - tpl.w / 2,
+    y: FLOOR_Y - tpl.h,
+    falling: false,
+    vy: 0,
+    passedGreenZone: false
+  };
+  heldBox = null;
+  maxLiftCm = 0;
+  demoStepBanner = '';
+  document.getElementById('simScorePill').textContent = `Độ cao nâng: 0.0 cm (Lượt đạt: ${completedCycles})`;
+}
+initSingleObject();
+
+function changeSingleObject() {
+  if (autoAnim) { clearInterval(autoAnim); autoAnim = null; }
+  initSingleObject();
+  drawRobot();
+}
+
+function getArmKinematics() {
+  const dCm = parseFloat(slBase.value) || 22.0;
+  const shDeg = parseFloat(slShoulder.value) || 42;
+  const elDeg = parseFloat(slElbow.value) || -68;
+  const clawPct = parseFloat(slClaw.value);
+
+  // Đế đặt cố định cách tâm vùng xanh lá ban đầu một khoảng dCm
+  const pivotA = {
+    x: TARGET_SPOT_X - dCm * PX_PER_CM,
+    y: 330
+  };
+  const L1 = 175; // Thanh cánh tay chính L1 (Vai A -> Khuỷu B)
+  const L2 = 155; // Thanh cánh tay phụ L2 (Khuỷu B -> Cổ tay C)
+
+  const a1 = -shDeg * Math.PI / 180;
+  const pivotB = {
+    x: pivotA.x + L1 * Math.cos(a1),
+    y: pivotA.y + L1 * Math.sin(a1)
+  };
+  const a2 = -(shDeg + elDeg) * Math.PI / 180;
+  const pivotC = {
+    x: pivotB.x + L2 * Math.cos(a2),
+    y: pivotB.y + L2 * Math.sin(a2)
+  };
+  const tip = {
+    x: pivotC.x + 32 * Math.cos(a2),
+    y: pivotC.y + 32 * Math.sin(a2)
+  };
+  return { dCm, shDeg, elDeg, clawPct, pivotA, pivotB, pivotC, tip, a1, a2 };
+}
+
+function startGravityLoop() {
+  if (gravityAnimId) return;
+  function stepFall() {
+    if (singleObj && singleObj.falling) {
+      // Rơi tự do thẳng đứng 100% theo trọng lực tại đúng hoành độ X nơi mở ngàm (KHÔNG ép về vị trí cũ)
+      singleObj.vy += 0.58;
+      singleObj.y += singleObj.vy;
+      const floorLimit = FLOOR_Y - singleObj.h;
+      if (singleObj.y >= floorLimit) {
+        singleObj.y = floorLimit;
+        // Hiệu ứng nảy nhẹ tự nhiên khi vật rơi tự do chạm mặt bàn
+        if (singleObj.vy > 3.2) {
+          singleObj.vy = -singleObj.vy * 0.24;
+          playTone(240, 0.07, 'triangle', 0.08);
+        } else {
+          singleObj.vy = 0;
+          singleObj.falling = false;
+        }
+      }
+      drawRobot();
+      gravityAnimId = requestAnimationFrame(stepFall);
+    } else {
+      gravityAnimId = null;
+      drawRobot();
+    }
+  }
+  gravityAnimId = requestAnimationFrame(stepFall);
+}
+
+function updateGrabLogic(k) {
+  if (!singleObj) return;
+  const isClosed = k.clawPct <= 28;
+  const isOpen = k.clawPct >= 52;
+
+  if (!heldBox && isClosed && !singleObj.falling) {
+    const cx = singleObj.x + singleObj.w / 2;
+    const cy = singleObj.y + singleObj.h / 2;
+    const dist = Math.hypot(k.tip.x - cx, k.tip.y - cy);
+    if (dist < 42) {
+      heldBox = singleObj;
+      heldBox.passedGreenZone = false;
+      playTone(580, 0.12, 'triangle');
+      document.getElementById('simMsg').className = 'notice ok';
+      document.getElementById('simMsg').innerHTML =
+        `✅ <strong>Đã kẹp chặt ${singleObj.name} (${singleObj.label})!</strong> Bây giờ chỉ cần kéo <b>Xi-lanh 1 (Đỏ – Khớp Vai)</b> tăng góc lên để nhấc vật <b>vượt qua khỏi Vùng Xanh Lá</b> rồi mở ngàm thả rơi tự do!`;
+    }
+  } else if (heldBox) {
+    heldBox.x = k.tip.x - heldBox.w / 2;
+    heldBox.y = k.tip.y - heldBox.h / 2 + 6;
+    if (heldBox.y + heldBox.h > FLOOR_Y) heldBox.y = FLOOR_Y - heldBox.h;
+
+    const objBottomY = heldBox.y + heldBox.h;
+    const liftPx = Math.max(0, (FLOOR_Y - heldBox.h) - heldBox.y);
+    const liftCm = liftPx / PX_PER_CM;
+    if (liftCm > maxLiftCm) maxLiftCm = liftCm;
+
+    // Kiểm tra đáy vật đã vượt lên qua khỏi đỉnh Vùng Xanh Lá (GREEN_ZONE_TOP_Y) hay chưa
+    const isAboveGreenZone = objBottomY <= GREEN_ZONE_TOP_Y;
+    if (isAboveGreenZone && !heldBox.passedGreenZone) {
+      heldBox.passedGreenZone = true;
+      playTone(740, 0.12, 'sine');
+      document.getElementById('simMsg').className = 'notice ok';
+      document.getElementById('simMsg').innerHTML =
+        `🌟 <strong>VẬT ĐÃ LÊN QUA KHỎI VÙNG XANH LÁ (Độ cao ${liftCm.toFixed(1)} cm)!</strong> Hãy kéo ngay <b>Xi-lanh 3 (Vàng)</b> lên trên 55% để <b>THẢ VẬT RƠI TỰ DO</b> xuống mặt bàn (không cần hạ cần xuống)!`;
+    }
+
+    document.getElementById('simScorePill').textContent = isAboveGreenZone
+      ? `✅ ĐÃ QUA VÙNG XANH LÁ (${liftCm.toFixed(1)} cm) – SẴN SÀNG THẢ RƠI!`
+      : `Đang nâng: ${liftCm.toFixed(1)} cm (Cần qua khỏi vùng xanh lá)`;
+
+    if (isOpen) {
+      const passed = heldBox.passedGreenZone || isAboveGreenZone;
+      heldBox.falling = true;
+      heldBox.vy = 1.2;
+      heldBox = null;
+
+      if (passed) {
+        completedCycles++;
+        playTone(820, 0.16, 'sine');
+        setTimeout(() => playTone(1040, 0.22, 'sine'), 130);
+        document.getElementById('simScorePill').textContent =
+          `🏆 ĐẠT YÊU CẦU! Đã thả rơi tự do (Lượt đạt: ${completedCycles})`;
+        document.getElementById('simMsg').className = 'notice ok';
+        document.getElementById('simMsg').innerHTML =
+          `🏆 <strong>HOÀN THÀNH XUẤT SẮC!</strong> Cánh tay đã gắp <b>${singleObj.name}</b> nhấc lên <b>vượt qua khỏi Vùng Xanh Lá</b> (đạt độ cao <b>${maxLiftCm.toFixed(1)} cm</b>) và mở ngàm <b>thả vật rơi tự do</b> xuống mặt bàn thành công!`;
+      } else {
+        playTone(300, 0.14, 'sawtooth');
+        document.getElementById('simMsg').className = 'notice warn';
+        document.getElementById('simMsg').innerHTML =
+          `⚠️ <strong>Vật chưa qua khỏi Vùng Xanh Lá khi thả!</strong> Hãy gắp lại và nâng <b>Xi-lanh 1 (Đỏ)</b> cao hơn (khoảng <b>40° – 52°</b>) để vật vượt hẳn lên trên vạch xanh lá rồi mới mở ngàm thả rơi tự do nhé!`;
+      }
+      startGravityLoop();
+    }
+  }
+}
+
+function drawMiniSyringe(ctx, x, y, pct, color, label) {
+  ctx.save();
+  ctx.fillStyle = '#1e293b';
+  ctx.strokeStyle = '#64748b';
+  ctx.lineWidth = 1.5;
+  ctx.fillRect(x, y, 24, 64);
+  ctx.strokeRect(x, y, 24, 64);
+  const h = Math.max(4, (pct / 100) * 56);
+  ctx.fillStyle = color;
+  ctx.fillRect(x + 2, y + 62 - h, 20, h);
+  ctx.fillStyle = '#e2e8f0';
+  ctx.fillRect(x + 2, y + 58 - h, 20, 4);
+  ctx.fillRect(x + 10, y + 32 - h, 4, 26);
+  ctx.fillRect(x + 4, y + 29 - h, 16, 4);
+  ctx.fillStyle = '#cbd5e1';
+  ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x + 12, y + 78);
+  ctx.restore();
+}
+
+function drawRobot() {
+  const k = getArmKinematics();
+  updateGrabLogic(k);
+
+  let distNote = 'Vừa phải (Chuẩn)';
+  let distColor = '#10b981';
+  if (k.dCm < 18.5) {
+    distNote = 'Hơi gần vật!';
+    distColor = '#f59e0b';
+  } else if (k.dCm > 25.0) {
+    distNote = 'Hơi xa vật!';
+    distColor = '#ef4444';
+  }
+
+  document.getElementById('lblCh1').textContent = `${k.dCm.toFixed(1)} cm (${distNote})`;
+  document.getElementById('lblCh2').textContent = Math.round(k.shDeg) + '°';
+  document.getElementById('lblCh3').textContent = Math.round(k.elDeg) + '°';
+  document.getElementById('lblCh4').textContent = (k.clawPct <= 28 ? 'Kẹp chặt ' : 'Mở ') + Math.round(k.clawPct) + '%';
+
+  document.getElementById('kpiBase').textContent = k.dCm.toFixed(1) + ' cm';
+  const distSubEl = document.getElementById('kpiDistSub');
+  if (distSubEl) {
+    distSubEl.textContent = distNote;
+    distSubEl.style.color = distColor;
+  }
+  document.getElementById('kpiShoulder').textContent = Math.round(k.shDeg) + '°';
+  document.getElementById('kpiElbow').textContent = Math.round(k.elDeg) + '°';
+  document.getElementById('kpiClaw').textContent = k.clawPct <= 28 ? 'Đóng chặt' : 'Đang mở';
+
+  const curLiftCm = singleObj ? Math.max(0, ((FLOOR_Y - singleObj.h) - singleObj.y) / PX_PER_CM) : 0;
+  const objBottomY = singleObj ? (singleObj.y + singleObj.h) : FLOOR_Y;
+  const isAboveGreen = objBottomY <= GREEN_ZONE_TOP_Y;
+
+  document.getElementById('kpiGrabStatus').textContent = heldBox
+    ? (isAboveGreen ? '✅ Đã qua vùng xanh lá!' : `Đang nâng (${curLiftCm.toFixed(1)}cm)`)
+    : (singleObj && singleObj.falling ? '⬇️ Đang rơi tự do!' : 'Đặt trên mặt bàn');
+
+  const ctx = rCtx;
+  ctx.clearRect(0, 0, rCanvas.width, rCanvas.height);
+
+  // Background grid
+  ctx.strokeStyle = 'rgba(148,163,184,0.12)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < 760; gx += 35) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 460); ctx.stroke();
+  }
+  for (let gy = 0; gy < 460; gy += 35) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(760, gy); ctx.stroke();
+  }
+
+  // Floor table
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(0, FLOOR_Y, 760, 46);
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(760, FLOOR_Y); ctx.stroke();
+
+  // VÙNG XANH LÁ (Chỉ yêu cầu gắp vật nhấc lên qua khỏi vùng xanh lá này rồi thả rơi tự do)
+  const gzLeft = TARGET_SPOT_X - 82;
+  const gzWidth = 164;
+  const gzHeight = FLOOR_Y - GREEN_ZONE_TOP_Y;
+
+  ctx.fillStyle = isAboveGreen ? 'rgba(16, 185, 129, 0.28)' : 'rgba(16, 185, 129, 0.16)';
+  ctx.fillRect(gzLeft, GREEN_ZONE_TOP_Y, gzWidth, gzHeight);
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 2.2;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeRect(gzLeft, GREEN_ZONE_TOP_Y, gzWidth, gzHeight);
+  ctx.setLineDash([]);
+
+  // Vạch giới hạn đỉnh Vùng Xanh Lá kéo rộng để học sinh dễ quan sát khi vật vượt qua
+  ctx.strokeStyle = isAboveGreen ? '#4ade80' : '#34d399';
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([8, 4]);
+  ctx.beginPath();
+  ctx.moveTo(gzLeft - 35, GREEN_ZONE_TOP_Y);
+  ctx.lineTo(gzLeft + gzWidth + 35, GREEN_ZONE_TOP_Y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = isAboveGreen ? '#4ade80' : '#6ee7b7';
+  ctx.font = 'bold 11.5px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(
+    isAboveGreen
+      ? '✅ ĐÃ VƯỢT QUA VÙNG XANH LÁ! (MỞ KẸP ĐỂ THẢ RƠI TỰ DO)'
+      : '▲ VẠCH ĐỈNH VÙNG XANH LÁ (CHỈ CẦN GẮP QUA VẠCH NÀY RỒI THẢ RƠI)',
+    TARGET_SPOT_X,
+    GREEN_ZONE_TOP_Y - 8
+  );
+
+  ctx.fillStyle = 'rgba(167, 243, 208, 0.7)';
+  ctx.font = 'bold 10.5px sans-serif';
+  ctx.fillText('VÙNG XANH LÁ', TARGET_SPOT_X, FLOOR_Y - 8);
+
+  // THƯỚC ĐO KHOẢNG CÁCH ĐẶT ĐẾ DO HỌC SINH TỰ ĐO (d cm) TRÊN MẶT BÀN
+  ctx.save();
+  const rulerY = 438;
+  ctx.strokeStyle = distColor;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(k.pivotA.x, FLOOR_Y);
+  ctx.lineTo(k.pivotA.x, rulerY + 6);
+  ctx.moveTo(TARGET_SPOT_X, FLOOR_Y);
+  ctx.lineTo(TARGET_SPOT_X, rulerY + 6);
+  ctx.moveTo(k.pivotA.x, rulerY);
+  ctx.lineTo(TARGET_SPOT_X, rulerY);
+  ctx.stroke();
+
+  const midRulerX = (k.pivotA.x + TARGET_SPOT_X) / 2;
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(midRulerX - 125, rulerY - 11, 250, 20);
+  ctx.strokeStyle = distColor;
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(midRulerX - 125, rulerY - 11, 250, 20);
+  ctx.fillStyle = '#fde68a';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`📏 Khoảng cách HS đặt Đế tới Vật: d = ${k.dCm.toFixed(1)} cm (${distNote})`, midRulerX, rulerY + 3);
+  ctx.restore();
+
+  // Top-Left HUD: Sơ đồ kiểm tra khoảng cách đặt đế vừa phải
+  ctx.save();
+  ctx.fillStyle = 'rgba(15,23,42,0.88)';
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1.5;
+  ctx.fillRect(14, 14, 240, 74);
+  ctx.strokeRect(14, 14, 240, 74);
+  ctx.fillStyle = '#93c5fd';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('BƯỚC 1: HS TỰ ĐO & ĐẶT ĐẾ CỐ ĐỊNH', 134, 31);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillText(`Khoảng cách d = ${k.dCm.toFixed(1)} cm`, 134, 52);
+  ctx.fillStyle = distColor;
+  ctx.font = 'bold 11px sans-serif';
+  ctx.fillText(`Đánh giá: ${distNote} (Chuẩn: 20–23 cm)`, 134, 72);
+  ctx.restore();
+
+  // Live 3 Mini Hydraulic Control Syringes (Top-Right)
+  ctx.fillStyle = 'rgba(15,23,42,0.85)';
+  ctx.fillRect(605, 14, 140, 118);
+  ctx.strokeStyle = '#334155'; ctx.strokeRect(605, 14, 140, 118);
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10.5px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('3 XI-LANH THỦY LỰC', 675, 28);
+  drawMiniSyringe(ctx, 619, 46, ((k.shDeg - 15) / 70) * 100, '#ef4444', 'Vai');
+  drawMiniSyringe(ctx, 663, 46, ((k.elDeg + 105) / 105) * 100, '#10b981', 'Khuỷu');
+  drawMiniSyringe(ctx, 707, 46, k.clawPct, '#f59e0b', 'Kẹp');
+
+  // Demo Step Banner (if running demo)
+  if (demoStepBanner) {
+    ctx.fillStyle = 'rgba(15, 41, 74, 0.94)';
+    ctx.strokeStyle = '#14b8a6';
+    ctx.lineWidth = 1.8;
+    ctx.fillRect(264, 14, 330, 44);
+    ctx.strokeRect(264, 14, 330, 44);
+    ctx.fillStyle = '#fde68a';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎬 DEMO TỰ ĐỘNG (GẮP QUA VÙNG XANH LÁ & THẢ RƠI):', 429, 30);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11.5px sans-serif';
+    ctx.fillText(demoStepBanner, 429, 48);
+  }
+
+  // ĐẾ CỐ ĐỊNH DO HỌC SINH ĐẶT TRÊN BÀN (KHÔNG XOAY, KHÔNG TRƯỢT)
+  const baseLeft = k.pivotA.x - 88;
+  const baseWidth = 156;
+  ctx.fillStyle = '#1e3a8a';
+  ctx.strokeStyle = '#60a5fa';
+  ctx.lineWidth = 1.8;
+  ctx.fillRect(baseLeft, 390, baseWidth, 24);
+  ctx.strokeRect(baseLeft, 390, baseWidth, 24);
+
+  // Counterweight at the back of the fixed base
+  ctx.fillStyle = '#334155';
+  ctx.fillRect(baseLeft + 8, 368, 50, 22);
+  ctx.strokeStyle = '#94a3b8';
+  ctx.strokeRect(baseLeft + 8, 368, 50, 22);
+  ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 9.5px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Đối trọng', baseLeft + 33, 382);
+
+  ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10.5px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('ĐẾ CỐ ĐỊNH (ĐẶT TẠI CHỖ)', baseLeft + baseWidth / 2, 406);
+
+  // Fixed Pillar (Trụ đứng gắn chặt trên Đế cố định)
+  ctx.fillStyle = '#0d9488';
+  ctx.fillRect(k.pivotA.x - 34, 378, 68, 12);
+  ctx.fillStyle = '#6366f1';
+  ctx.beginPath();
+  ctx.moveTo(k.pivotA.x - 24, 378);
+  ctx.lineTo(k.pivotA.x + 24, 378);
+  ctx.lineTo(k.pivotA.x + 14, k.pivotA.y - 8);
+  ctx.lineTo(k.pivotA.x - 14, k.pivotA.y - 8);
+  ctx.closePath();
+  ctx.fill();
+
+  // Hydraulic Cylinder 1 (RED - Shoulder Actuator)
+  const cyl2Base = { x: k.pivotA.x + 28, y: 378 };
+  const cyl2Attach = {
+    x: k.pivotA.x + 76 * Math.cos(k.a1),
+    y: k.pivotA.y + 76 * Math.sin(k.a1)
+  };
+  ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cyl2Base.x, cyl2Base.y);
+  ctx.lineTo((cyl2Base.x + cyl2Attach.x) / 2, (cyl2Base.y + cyl2Attach.y) / 2); ctx.stroke();
+  ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(cyl2Base.x, cyl2Base.y); ctx.lineTo(cyl2Attach.x, cyl2Attach.y); ctx.stroke();
+
+  // Lower Arm (Shoulder A -> Elbow B)
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 22; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(k.pivotA.x, k.pivotA.y); ctx.lineTo(k.pivotB.x, k.pivotB.y); ctx.stroke();
+  ctx.strokeStyle = '#fde68a'; ctx.lineWidth = 14;
+  ctx.beginPath(); ctx.moveTo(k.pivotA.x, k.pivotA.y); ctx.lineTo(k.pivotB.x, k.pivotB.y); ctx.stroke();
+
+  // Hydraulic Cylinder 2 (GREEN - Elbow Actuator)
+  const cyl3Base = {
+    x: k.pivotA.x + 62 * Math.cos(k.a1) - 12 * Math.sin(k.a1),
+    y: k.pivotA.y + 62 * Math.sin(k.a1) + 12 * Math.cos(k.a1)
+  };
+  const cyl3Attach = {
+    x: k.pivotB.x + 56 * Math.cos(k.a2),
+    y: k.pivotB.y + 56 * Math.sin(k.a2)
+  };
+  ctx.strokeStyle = '#6ee7b7'; ctx.lineWidth = 9;
+  ctx.beginPath(); ctx.moveTo(cyl3Base.x, cyl3Base.y);
+  ctx.lineTo((cyl3Base.x + cyl3Attach.x) / 2, (cyl3Base.y + cyl3Attach.y) / 2); ctx.stroke();
+  ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4.5;
+  ctx.beginPath(); ctx.moveTo(cyl3Base.x, cyl3Base.y); ctx.lineTo(cyl3Attach.x, cyl3Attach.y); ctx.stroke();
+
+  // Upper Arm (Elbow B -> Wrist C)
+  ctx.strokeStyle = '#059669'; ctx.lineWidth = 18;
+  ctx.beginPath(); ctx.moveTo(k.pivotB.x, k.pivotB.y); ctx.lineTo(k.pivotC.x, k.pivotC.y); ctx.stroke();
+  ctx.strokeStyle = '#a7f3d0'; ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.moveTo(k.pivotB.x, k.pivotB.y); ctx.lineTo(k.pivotC.x, k.pivotC.y); ctx.stroke();
+
+  // Claw / Gripper at C
+  const spread = 0.16 + (k.clawPct / 100) * 0.58;
+  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  const u1 = { x: k.pivotC.x + 24 * Math.cos(k.a2 - spread), y: k.pivotC.y + 24 * Math.sin(k.a2 - spread) };
+  const u2 = { x: u1.x + 22 * Math.cos(k.a2 + 0.18), y: u1.y + 22 * Math.sin(k.a2 + 0.18) };
+  ctx.beginPath(); ctx.moveTo(k.pivotC.x, k.pivotC.y); ctx.lineTo(u1.x, u1.y); ctx.lineTo(u2.x, u2.y); ctx.stroke();
+
+  const l1 = { x: k.pivotC.x + 24 * Math.cos(k.a2 + spread), y: k.pivotC.y + 24 * Math.sin(k.a2 + spread) };
+  const l2 = { x: l1.x + 22 * Math.cos(k.a2 - 0.18), y: l1.y + 22 * Math.sin(k.a2 - 0.18) };
+  ctx.beginPath(); ctx.moveTo(k.pivotC.x, k.pivotC.y); ctx.lineTo(l1.x, l1.y); ctx.lineTo(l2.x, l2.y); ctx.stroke();
+
+  // Pivot Joints A, B, C
+  [{p:k.pivotA, t:'A'}, {p:k.pivotB, t:'B'}, {p:k.pivotC, t:'C'}].forEach(j => {
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(j.p.x, j.p.y, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(j.t, j.p.x, j.p.y + 3);
+  });
+
+  // Draw the Single Object
+  if (singleObj) {
+    ctx.fillStyle = singleObj.color;
+    ctx.strokeStyle = isAboveGreen ? '#4ade80' : '#ffffff';
+    ctx.lineWidth = isAboveGreen ? 3 : 2.2;
+    ctx.fillRect(singleObj.x, singleObj.y, singleObj.w, singleObj.h);
+    ctx.strokeRect(singleObj.x, singleObj.y, singleObj.w, singleObj.h);
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 11.5px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(singleObj.label, singleObj.x + singleObj.w / 2, singleObj.y + singleObj.h / 2 + 4);
+
+    // Mũi tên chỉ hướng rơi tự do khi đang rơi
+    if (singleObj.falling) {
+      const cx = singleObj.x + singleObj.w / 2;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cx, singleObj.y + singleObj.h);
+      ctx.lineTo(cx, FLOOR_Y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 10.5px sans-serif';
+      ctx.fillText('⬇ Rơi tự do', cx + 38, singleObj.y + singleObj.h / 2);
+    }
+
+    // Nếu vật đang được nhấc lên cao, vẽ đường gióng báo độ cao nâng Δh
+    if (curLiftCm >= 0.8 && !singleObj.falling) {
+      const dimX = singleObj.x + singleObj.w + 22;
+      ctx.strokeStyle = isAboveGreen ? '#4ade80' : '#fde68a';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(singleObj.x + singleObj.w, objBottomY);
+      ctx.lineTo(dimX + 6, objBottomY);
+      ctx.moveTo(dimX, objBottomY);
+      ctx.lineTo(dimX, FLOOR_Y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = isAboveGreen ? '#4ade80' : '#fde68a';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(
+        isAboveGreen ? `↑ Δh = ${curLiftCm.toFixed(1)} cm (Qua vùng xanh!)` : `↑ Δh = ${curLiftCm.toFixed(1)} cm`,
+        dimX + 8,
+        (objBottomY + FLOOR_Y) / 2 + 4
+      );
+    }
+  }
+}
+
+[slBase, slShoulder, slElbow, slClaw].forEach(el => el.addEventListener('input', drawRobot));
+
+function resetSim() {
+  if (autoAnim) { clearInterval(autoAnim); autoAnim = null; }
+  if (gravityAnimId) { cancelAnimationFrame(gravityAnimId); gravityAnimId = null; }
+  demoPaused = false;
+  const pauseBtn = document.getElementById('btnPauseDemo');
+  if (pauseBtn) pauseBtn.style.display = 'none';
+  slBase.value = 22;
+  slShoulder.value = 42;
+  slElbow.value = -68;
+  slClaw.value = 85;
+  initSingleObject();
+  document.getElementById('simMsg').className = 'notice ok';
+  document.getElementById('simMsg').innerHTML =
+    '🎯 <strong>Yêu cầu thực hành (Đơn giản – Dễ thao tác nhất):</strong><br>1️⃣ Học sinh tự đo và đặt <b>Đế cố định</b> cách vật một khoảng vừa phải (chuẩn <b>d = 22 cm</b>).<br>2️⃣ Hạ cần kẹp chặt vật ➔ Bơm <b>Xi-lanh 1 (Đỏ)</b> nhấc vật <b>vượt lên qua khỏi Vùng Xanh Lá</b> ➔ Mở ngàm (<b>Xi-lanh 3 Vàng</b>) để <b>thả vật rơi tự do từ trên cao xuống</b> (không cần hạ cần, không cần thả đúng vị trí)!';
+  drawRobot();
+}
+
+function togglePauseDemo() {
+  if (!autoAnim) return;
+  demoPaused = !demoPaused;
+  const pauseBtn = document.getElementById('btnPauseDemo');
+  if (pauseBtn) {
+    pauseBtn.innerHTML = demoPaused ? '▶ Tiếp Tục Demo' : '⏸ Tạm Dừng';
+    pauseBtn.className = demoPaused ? 'btn btn-green' : 'btn btn-amber';
+  }
+}
+
+function demoAutoPick() {
+  resetSim();
+  const pauseBtn = document.getElementById('btnPauseDemo');
+  if (pauseBtn) {
+    pauseBtn.style.display = 'inline-flex';
+    pauseBtn.innerHTML = '⏸ Tạm Dừng';
+    pauseBtn.className = 'btn btn-amber';
+  }
+
+  // Kịch bản chiếu chậm gọn 6 bước:
+  // Đế đặt cố định d = 22cm -> Hạ xuống gắp vật -> Nhấc vật vượt lên qua khỏi Vùng Xanh Lá -> Mở ngàm THẢ VẬT RƠI TỰ DO ngay từ trên cao!
+  const keyframes = [
+    { b: 22, s: 37, e: -67, c: 85, hold: 18, msg: 'Bước 1: HS đo khoảng cách vừa phải (d = 22 cm) đặt Đế cố định' },
+    { b: 22, s: 23, e: -67, c: 85, hold: 22, msg: 'Bước 2: Hạ Khớp Vai (23°) đưa ngàm kẹp chạm vật trong Vùng Xanh Lá' },
+    { b: 22, s: 23, e: -67, c: 16, hold: 26, msg: 'Bước 3: Bơm Xi-lanh Vàng ĐÓNG NGÀM KẸP CHẶT VẬT!' },
+    { b: 22, s: 34, e: -67, c: 16, hold: 12, msg: 'Bước 4: Bơm Xi-lanh Đỏ bắt đầu nhấc vật lên khỏi mặt bàn' },
+    { b: 22, s: 50, e: -67, c: 16, hold: 32, msg: 'Bước 5: GẮP VẬT VƯỢT LÊN QUA KHỎI VÙNG XANH LÁ (Δh > 10 cm)!' },
+    { b: 22, s: 50, e: -67, c: 85, hold: 35, msg: 'Bước 6: Mở ngàm THẢ VẬT RƠI TỰ DO từ trên cao xuống bàn — Hoàn tất!' }
+  ];
+
+  let step = 0, t = 0, holdCounter = 0;
+  let cur = { b: 22, s: 42, e: -68, c: 85 };
+
+  autoAnim = setInterval(() => {
+    if (demoPaused) return;
+    const target = keyframes[step];
+    demoStepBanner = target.msg;
+
+    const speedMult = 1.0; // Tốc độ bình thường cố định
+
+    if (t < 1) {
+      t = Math.min(1, t + 0.020 * speedMult);
+      const ease = t * t * (3 - 2 * t);
+      slBase.value = (cur.b + (target.b - cur.b) * ease).toFixed(1);
+      slShoulder.value = (cur.s + (target.s - cur.s) * ease).toFixed(1);
+      slElbow.value = (cur.e + (target.e - cur.e) * ease).toFixed(1);
+      slClaw.value = Math.round(cur.c + (target.c - cur.c) * ease);
+      drawRobot();
+    } else {
+      holdCounter += speedMult;
+      drawRobot();
+      if (holdCounter >= (target.hold || 15)) {
+        cur = { b: target.b, s: target.s, e: target.e, c: target.c };
+        t = 0;
+        holdCounter = 0;
+        step++;
+        if (step >= keyframes.length) {
+          clearInterval(autoAnim);
+          autoAnim = null;
+          demoStepBanner = '';
+          if (pauseBtn) pauseBtn.style.display = 'none';
+          drawRobot();
+        }
+      }
+    }
+  }, 35);
+}
+drawRobot();
+
+// ==================== TAB 2: PASCAL'S LAW CALCULATOR ====================
+function calcPascal() {
+  const d1 = parseFloat(document.getElementById('syr1').value);
+  const d2 = parseFloat(document.getElementById('syr2').value);
+  const F1 = parseFloat(document.getElementById('slF1').value);
+  const h1 = parseFloat(document.getElementById('slH1').value);
+  const bubble = document.getElementById('chkBubble').checked;
+
+  document.getElementById('lblF1').textContent = F1 + ' N';
+  document.getElementById('lblH1').textContent = h1.toFixed(1) + ' cm';
+
+  const S1_cm2 = Math.PI * Math.pow(d1 / 20, 2);
+  const S2_cm2 = Math.PI * Math.pow(d2 / 20, 2);
+  const ratio = S2_cm2 / S1_cm2;
+
+  const eff = bubble ? 0.72 : 1.0;
+  const F2 = F1 * ratio * eff;
+  const h2 = (h1 / ratio) * (bubble ? 0.75 : 1.0);
+  const pressure_kPa = (F1 / (S1_cm2 * 1e-4)) / 1000;
+
+  document.getElementById('resRatio').textContent = ratio.toFixed(2) + '×';
+  document.getElementById('resF2').textContent = F2.toFixed(1) + ' N';
+  document.getElementById('resMass').textContent = `≈ ${Math.round(F2 * 100)} g (lý thuyết)`;
+  document.getElementById('resPressure').textContent = pressure_kPa.toFixed(1) + ' kPa';
+  document.getElementById('resH2').textContent = h2.toFixed(2) + ' cm';
+
+  const vBox = document.getElementById('pascalVerdict');
+  if (bubble) {
+    vBox.className = 'notice warn';
+    vBox.innerHTML = '⚠️ <strong>CẢNH BÁO BỌT KHÍ:</strong> Không khí bị nén lại làm mất ~25–28% hành trình và lực đẩy! Khớp robot sẽ bị giật cục, trễ nhịp. Hãy nhúng đầu ống xuống chậu nước để đuổi sạch 100% bọt khí!';
+  } else if (ratio > 1.2) {
+    vBox.className = 'notice ok';
+    vBox.innerHTML = `✅ <strong>CẤU HÌNH KHUẾCH ĐẠI LỰC (${ratio.toFixed(2)}×):</strong> Rất lý tưởng cho <b>Khớp Vai (Kênh Đỏ)</b>! Ấn nhẹ ${F1} N tạo ra lực nâng ${F2.toFixed(1)} N (lợi lực, thiệt đường đi: đầu ra dịch chuyển ${h2.toFixed(2)} cm).`;
+  } else if (Math.abs(ratio - 1) < 0.05) {
+    vBox.className = 'notice';
+    vBox.innerHTML = `ℹ️ <strong>CẤU HÌNH TRUYỀN ĐỘNG 1 : 1:</strong> Rất phù hợp cho <b>Mâm xoay đế (Xanh dương)</b>, <b>Khớp Khuỷu (Xanh lá)</b> và <b>Kẹp gắp (Vàng)</b> để giữ hành trình nhanh, chính xác.`;
+  } else {
+    vBox.className = 'notice warn';
+    vBox.innerHTML = `⚡ <strong>CẤU HÌNH TĂNG TỐC ĐỘ (Thiệt lực):</strong> Lực đầu ra giảm còn ${F2.toFixed(1)} N nhưng hành trình tăng vọt lên ${h2.toFixed(2)} cm — chỉ nên dùng cho khớp nhẹ cần xoay góc rất rộng.`;
+  }
+
+  drawPascalCanvas(d1, d2, F1, F2, h1, h2, bubble);
+}
+
+function drawPascalCanvas(d1, d2, F1, F2, h1, h2, bubble) {
+  const c = document.getElementById('pascalCanvas');
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  // Draw two connected syringes
+  const w1 = d1 * 3.1;
+  const w2 = d2 * 3.1;
+  const x1 = 105 - w1 / 2;
+  const x2 = 340 - w2 / 2;
+  const baseY = 210;
+
+  // Connecting tube
+  ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 14; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(105, baseY); ctx.lineTo(105, 245); ctx.lineTo(340, 245); ctx.lineTo(340, baseY);
+  ctx.stroke();
+  ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 8;
+  ctx.stroke();
+
+  if (bubble) {
+    ctx.fillStyle = '#ffffff';
+    [165, 215, 275].forEach(bx => {
+      ctx.beginPath(); ctx.arc(bx, 245, 5, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  // Barrel 1
+  ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#0f294a'; ctx.lineWidth = 2;
+  ctx.fillRect(x1, 70, w1, 140); ctx.strokeRect(x1, 70, w1, 140);
+  const fH1 = Math.max(20, 125 - h1 * 15);
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillRect(x1 + 2, baseY - fH1, w1 - 4, fH1 - 1);
+  // Piston 1
+  ctx.fillStyle = '#334155';
+  ctx.fillRect(x1 + 2, baseY - fH1 - 8, w1 - 4, 8);
+  ctx.fillRect(102, baseY - fH1 - 42, 6, 34);
+  ctx.fillRect(x1 - 4, baseY - fH1 - 47, w1 + 8, 6);
+
+  // Barrel 2
+  ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#0f294a'; ctx.lineWidth = 2;
+  ctx.fillRect(x2, 70, w2, 140); ctx.strokeRect(x2, 70, w2, 140);
+  const fH2 = Math.min(130, 35 + h2 * 15);
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillRect(x2 + 2, baseY - fH2, w2 - 4, fH2 - 1);
+  // Piston 2
+  ctx.fillStyle = '#334155';
+  ctx.fillRect(x2 + 2, baseY - fH2 - 8, w2 - 4, 8);
+  ctx.fillRect(337, baseY - fH2 - 42, 6, 34);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(x2 - 4, baseY - fH2 - 48, w2 + 8, 8);
+
+  // Labels
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(`↓ F₁ = ${F1} N`, 105, 25);
+  ctx.fillStyle = '#059669';
+  ctx.fillText(`↑ F₂ = ${F2.toFixed(1)} N`, 340, 25);
+
+  ctx.fillStyle = '#0f294a'; ctx.font = 'bold 11px sans-serif';
+  ctx.fillText(`Ø₁ = ${d1}mm`, 105, 266);
+  ctx.fillText(`Ø₂ = ${d2}mm`, 340, 266);
+
+  // Force bar comparison on Right
+  ctx.fillStyle = '#1e293b'; ctx.font = 'bold 11px sans-serif';
+  ctx.fillText('SO SÁNH LỰC', 485, 34);
+  const maxF = Math.max(F1, F2, 25);
+  const b1 = (F1 / maxF) * 140;
+  const b2 = (F2 / maxF) * 140;
+  ctx.fillStyle = '#ef4444'; ctx.fillRect(442, 200 - b1, 34, b1);
+  ctx.fillStyle = '#10b981'; ctx.fillRect(492, 200 - b2, 34, b2);
+  ctx.fillStyle = '#0f294a'; ctx.font = 'bold 10.5px sans-serif';
+  ctx.fillText('F₁', 459, 215); ctx.fillText(F1 + 'N', 459, 195 - b1);
+  ctx.fillText('F₂', 509, 215); ctx.fillText(F2.toFixed(1) + 'N', 509, 195 - b2);
+}
+calcPascal();
+
+// ==================== TAB 3: AI PROMPT & CHECKLIST ====================
+function buildPrompt() {
+  const m = document.getElementById('aiMat').value;
+  const d = document.getElementById('aiDof').value;
+  const h = document.getElementById('aiHyd').value;
+  const s = document.getElementById('aiStyle').value;
+  document.getElementById('promptOut').value =
+    `Thiết kế mô hình STEM Cánh tay robot thủy lực làm từ ${m}, có cấu tạo ${d}, điều khiển bằng ${h}, kết hợp đối trọng giữ cân bằng ở đế. Trình bày theo ${s}.`;
+}
+buildPrompt();
+
+function copyPrompt() {
+  const txt = document.getElementById('promptOut');
+  txt.select();
+  navigator.clipboard ? navigator.clipboard.writeText(txt.value) : document.execCommand('copy');
+  const toast = document.getElementById('copyToast');
+  toast.style.display = 'inline';
+  playTone(660, 0.12);
+  setTimeout(() => toast.style.display = 'none', 2600);
+}
+
+const checkItems = [
+  "Bìa carton 5 lớp tái chế (tối thiểu 2 tấm khổ A3) hoặc que gỗ đè lưỡi",
+  "05 xi-lanh nhựa 10ml + 03 xi-lanh nhựa 5ml (ĐÃ THÁO BỎ 100% KIM TIÊM)",
+  "1,6 mét ống dẫn silicon Ø4mm + 15 dây rút nhựa nhỏ siết cổ ống",
+  "Que xiên tre / đũa tròn Ø4mm + ống hút cứng làm trục khớp bản lề",
+  "Túi cát / sỏi (~300g) làm đối trọng chống lật đế + mút xốp dán hàm kẹp",
+  "4 màu nước (Xanh dương – Đỏ – Xanh lá – Vàng) + khay hứng nước & khăn lau",
+  "Dụng cụ an toàn: Thước kẻ, compa, bút chì, kéo, dao rọc giấy có tấm lót, súng bắn keo có giá đỡ"
+];
+let chkState = JSON.parse(localStorage.getItem('cn8_hue_chk') || '[]');
+if (chkState.length !== checkItems.length) chkState = checkItems.map(() => false);
+
+function renderChecklist() {
+  const wrap = document.getElementById('checklistWrap');
+  wrap.innerHTML = '';
+  let done = 0;
+  checkItems.forEach((txt, idx) => {
+    if (chkState[idx]) done++;
+    const lbl = document.createElement('label');
+    lbl.className = 'chk-item' + (chkState[idx] ? ' done' : '');
+    lbl.innerHTML = `<input type="checkbox" ${chkState[idx] ? 'checked' : ''} onchange="toggleChk(${idx})"><span>${txt}</span>`;
+    wrap.appendChild(lbl);
+  });
+  const pct = Math.round((done / checkItems.length) * 100);
+  document.getElementById('chkPct').textContent = pct + '%';
+  document.getElementById('chkBar').style.width = pct + '%';
+}
+function toggleChk(i) {
+  chkState[i] = !chkState[i];
+  localStorage.setItem('cn8_hue_chk', JSON.stringify(chkState));
+  playTone(chkState[i] ? 600 : 350, 0.08);
+  renderChecklist();
+}
+renderChecklist();
+
+// ==================== TAB 4: QUIZ GAME (10 QUESTIONS) ====================
+const quizData = [
+  {
+    cat: "Công nghệ 8 – Cơ cấu biến đổi chuyển động",
+    q: "Trong cánh tay robot thủy lực, chuyển động đẩy/kéo thẳng của pít-tông xi-lanh gắn vào thanh cánh tay có khớp bản lề tạo ra chuyển động nào?",
+    opts: ["A. Chuyển động quay (lắc) quanh trục khớp", "B. Chuyển động thẳng đều vô tận", "C. Chuyển động tròn 360° liên tục", "D. Không tạo ra chuyển động"],
+    ans: 0,
+    exp: "Khớp bản lề biến đổi chuyển động tịnh tiến của pít-tông xi-lanh thành chuyển động quay/lắc của cánh tay robot (Chương II – Công nghệ 8)."
+  },
+  {
+    cat: "KHTN 8 – Định luật Pascal",
+    q: "Áp suất tác dụng lên một chất lỏng đựng trong bình kín được chất lỏng truyền đi như thế nào?",
+    opts: ["A. Chỉ truyền thẳng xuống đáy", "B. Truyền đi nguyên vẹn theo mọi hướng", "C. Mất một nửa khi đi qua ống uốn cong", "D. Chỉ truyền khi có nguồn điện 3V"],
+    ans: 1,
+    exp: "Theo Định luật Pascal: Áp suất tác dụng lên chất lỏng (hoặc khí) đựng trong bình kín được truyền đi nguyên vẹn theo mọi hướng."
+  },
+  {
+    cat: "Toán 8 & Vật lý – Khuếch đại lực",
+    q: "Dùng xi-lanh 5ml (d₁ = 12mm) đẩy xi-lanh 10ml (d₂ = 15mm) tại Khớp Vai sẽ khuếch đại lực lên khoảng bao nhiêu lần?",
+    opts: ["A. 0,64 lần (giảm lực)", "B. 1,00 lần (giữ nguyên)", "C. ~1,56 lần (tăng lực)", "D. 5,00 lần"],
+    ans: 2,
+    exp: "Ta có F₂/F₁ = S₂/S₁ = (d₂/d₁)² = (15/12)² = 1,5625 lần. Vì vậy Khớp Vai dùng 5ml → 10ml sẽ nâng tải nhẹ tay hơn rất nhiều!"
+  },
+  {
+    cat: "Kỹ thuật thủy lực",
+    q: "Tại sao phải nhúng chìm đầu xi-lanh và ống dẫn xuống chậu nước khi nạp chất lỏng?",
+    opts: ["A. Để làm mềm ống nhựa", "B. Để đuổi sạch 100% bọt khí, tránh trễ hành trình và giảm lực", "C. Để nước chảy chậm lại", "D. Để tăng trọng lượng cánh tay"],
+    ans: 1,
+    exp: "Nước hầu như không nén được nên truyền lực tức thời; còn bọt khí nén được sẽ hoạt động như lò xo làm khớp robot giật cục, hụt lực."
+  },
+  {
+    cat: "Công nghệ 8 – Gia công cơ khí",
+    q: "Khi bồi dán 2 lớp bìa carton 5 lớp để làm thanh cánh tay robot siêu cứng, nên xếp chiều sóng carton của 2 lớp như thế nào?",
+    opts: ["A. Xếp vuông góc (chéo sóng) với nhau", "B. Chỉ dùng 1 lớp cho mỏng", "C. Làm ướt bìa trước khi dán", "D. Cắt rãnh giữa thân thanh"],
+    ans: 0,
+    exp: "Bồi 2 lớp bìa carton chéo chiều sóng (vuông góc 90°) tạo kết cấu tương tự gỗ dán (plywood), tăng độ cứng chống uốn gấp nhiều lần."
+  },
+  {
+    cat: "KHTN 8 – Cân bằng & Đòn bẩy",
+    q: "Giải pháp kỹ thuật nào hiệu quả nhất để đế robot KHÔNG bị lật nhào về phía trước khi vươn tay gắp vật nặng 120g?",
+    opts: ["A. Thu nhỏ diện tích đáy đế", "B. Đặt thêm đối trọng (túi cát/sỏi) ở phía sau đế và mở rộng mặt đáy", "C. Kéo dài cánh tay lên 60 cm", "D. Bôi dầu vào đế"],
+    ans: 1,
+    exp: "Đối trọng phía sau tạo mô-men cân bằng ngược chiều với mô-men trọng lực của vật đang gắp, giúp trọng tâm luôn nằm trong mặt chân đế."
+  },
+  {
+    cat: "Công nghệ 8 – Vẽ kỹ thuật",
+    q: "Trên bản vẽ kỹ thuật 2D phôi cắt cánh tay robot, ký hiệu 'Ø4' tại các chấm đỏ có ý nghĩa gì?",
+    opts: ["A. Cắt bỏ đoạn dài 4 cm", "B. Lỗ tròn có đường kính 4 mm để lắp trục quay", "C. Dán 4 lớp keo", "D. Góc nghiêng 4 độ"],
+    ans: 1,
+    exp: "Trong tiêu chuẩn Vẽ kỹ thuật (Công nghệ 8), ký hiệu Ø dùng để chỉ đường kính của hình tròn/lỗ tròn (Ø4 = đường kính 4 mm)."
+  },
+  {
+    cat: "Công nghệ 8 – An toàn lao động",
+    q: "Quy tắc an toàn BẮT BUỘC hàng đầu khi sử dụng xi-lanh y tế chế tạo cánh tay robot thủy lực là gì?",
+    opts: ["A. Giữ nguyên kim tiêm để cắm vào ống", "B. Tuyệt đối tháo bỏ 100% kim tiêm trước khi sử dụng", "C. Dùng nước sôi 100°C nạp vào xi-lanh", "D. Đấu thêm nguồn điện 220V"],
+    ans: 1,
+    exp: "Tuyệt đối không dùng kim tiêm trong mọi hoạt động STEM; chỉ sử dụng thân xi-lanh nhựa nối trực tiếp với ống silicon mềm Ø4mm."
+  },
+  {
+    cat: "Kỹ thuật ma sát & Thiết kế hàm kẹp",
+    q: "Để hàm kẹp bằng bìa carton gắp chặt ly giấy hoặc chai nhựa trơn mà không bị tuột, cần cải tiến thế nào?",
+    opts: ["A. Bọc giấy bóng kính trơn lên mặt kẹp", "B. Dán miếng mút xốp hoặc cao su nhám vào mặt trong 2 ngàm kẹp", "C. Làm ngàm kẹp ngắn lại còn 1 cm", "D. Thoa xà phòng lên vật gắp"],
+    ans: 1,
+    exp: "Lớp mút xốp/cao su nhám có hệ số ma sát lớn và độ đàn hồi giúp ôm sát bề mặt vật thể, tăng lực ma sát nghỉ giữ vật chắc chắn."
+  },
+  {
+    cat: "Tin học & AI – Quy trình thiết kế kỹ thuật",
+    q: "Trong dự án STEM này, công cụ Trí tuệ nhân tạo (Gemini / Bing Image) được học sinh ứng dụng ở bước nào là hợp lý nhất?",
+    opts: ["A. Tạo phác thảo trực quan ý tưởng kiểu dáng (Hoạt động 1) để làm cảm hứng lập Bản vẽ 2D", "B. Thay học sinh tự cắt bìa carton", "C. Thay thế hoàn toàn việc học Định luật Pascal", "D. Không cần kiểm tra kích thước thực tế"],
+    ans: 0,
+    exp: "AI hỗ trợ mở rộng ý tưởng thiết kế trực quan; học sinh vẫn phải 'Kỹ thuật hóa' bằng Bản vẽ 2D, tính toán Pascal và tự tay chế tạo, thử nghiệm."
+  }
+];
+
+let qIdx = 0, qScore = 0, qAnswered = false;
+
+function startQuiz() {
+  qIdx = 0; qScore = 0;
+  document.getElementById('quizStartBox').style.display = 'none';
+  document.getElementById('quizResultBox').style.display = 'none';
+  document.getElementById('quizPlayBox').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  qAnswered = false;
+  const item = quizData[qIdx];
+  document.getElementById('quizMetaPill').textContent = `Câu ${qIdx + 1} / ${quizData.length}`;
+  document.getElementById('quizBar').style.width = ((qIdx / quizData.length) * 100) + '%';
+  document.getElementById('quizCat').textContent = '📌 ' + item.cat;
+  document.getElementById('quizScoreLive').textContent = `Điểm: ${qScore} / ${quizData.length}`;
+  document.getElementById('quizQText').textContent = `Câu ${qIdx + 1}: ${item.q}`;
+  document.getElementById('quizExplain').style.display = 'none';
+  document.getElementById('btnNextQ').style.display = 'none';
+
+  const optWrap = document.getElementById('quizOptions');
+  optWrap.innerHTML = '';
+  item.opts.forEach((oText, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = oText;
+    btn.onclick = () => selectAnswer(idx, btn);
+    optWrap.appendChild(btn);
+  });
+}
+
+function selectAnswer(idx, btn) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const item = quizData[qIdx];
+  const allBtns = document.querySelectorAll('.quiz-opt');
+  allBtns.forEach(b => b.disabled = true);
+
+  const expBox = document.getElementById('quizExplain');
+  expBox.style.display = 'block';
+
+  if (idx === item.ans) {
+    btn.classList.add('correct');
+    qScore++;
+    playTone(720, 0.14);
+    expBox.className = 'notice ok';
+    expBox.innerHTML = '✅ <strong>Chính xác!</strong> ' + item.exp;
+  } else {
+    btn.classList.add('wrong');
+    allBtns[item.ans].classList.add('correct');
+    playTone(230, 0.2, 'sawtooth');
+    expBox.className = 'notice warn';
+    expBox.innerHTML = '❌ <strong>Chưa đúng!</strong> ' + item.exp;
+  }
+  document.getElementById('quizScoreLive').textContent = `Điểm: ${qScore} / ${quizData.length}`;
+  const nextBtn = document.getElementById('btnNextQ');
+  nextBtn.style.display = 'inline-flex';
+  nextBtn.textContent = (qIdx === quizData.length - 1) ? '🏅 Xem Giấy Chứng Nhận' : 'Câu Tiếp Theo ➔';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx < quizData.length) {
+    renderQuestion();
+  } else {
+    showCert();
+  }
+}
+
+function showCert() {
+  document.getElementById('quizPlayBox').style.display = 'none';
+  document.getElementById('quizResultBox').style.display = 'block';
+  document.getElementById('quizMetaPill').textContent = 'Hoàn thành!';
+  const name = document.getElementById('stuName').value.trim() || 'Học sinh Lớp 8 – THCS Nguyễn Du';
+  const cls = document.getElementById('stuClass').value.trim() || 'Khối 8 – Môn Công nghệ';
+  document.getElementById('certName').textContent = name;
+  document.getElementById('certClass').textContent = cls;
+  document.getElementById('certScore').textContent = `${qScore} / ${quizData.length} điểm`;
+  const rank = qScore >= 9 ? 'Danh hiệu: 🌟 KỸ SƯ THỦY LỰC XUẤT SẮC (Chụp màn hình nộp lên Padlet!)'
+             : qScore >= 7 ? 'Danh hiệu: 👍 KỸ SƯ THỦY LỰC KHÁ GIỎI (Sẵn sàng bước vào chế tạo!)'
+             : '💡 Em hãy xem lại giải thích và thử làm lại để đạt trên 8/10 điểm nhé!';
+  document.getElementById('certRank').textContent = rank;
+  const now = new Date();
+  document.getElementById('certDate').textContent = now.toLocaleDateString('vi-VN');
+  playTone(523, 0.12); setTimeout(() => playTone(659, 0.12), 120); setTimeout(() => playTone(784, 0.25), 240);
+}
+
+function restartQuiz() {
+  document.getElementById('quizResultBox').style.display = 'none';
+  document.getElementById('quizStartBox').style.display = 'block';
+  document.getElementById('quizMetaPill').textContent = 'Câu 1 / 10';
+}
+
+// ==================== TAB 5: TIMER & RUBRIC LEADERBOARD ====================
+let tLeft = 60.0, tInt = null;
+function renderTimer() {
+  const el = document.getElementById('timerDisplay');
+  el.textContent = tLeft.toFixed(1) + ' s';
+  el.className = 'timer-display' + (tLeft <= 10 ? ' urgent' : '');
+}
+function startTimer() {
+  if (tInt) return;
+  if (tLeft <= 0) tLeft = 60.0;
+  playTone(880, 0.12);
+  tInt = setInterval(() => {
+    tLeft = Math.max(0, tLeft - 0.1);
+    renderTimer();
+    if (tLeft <= 0) {
+      clearInterval(tInt); tInt = null;
+      playTone(440, 0.5, 'sawtooth', 0.18);
+    }
+  }, 100);
+}
+function pauseTimer() {
+  if (tInt) { clearInterval(tInt); tInt = null; }
+}
+function resetTimer() {
+  pauseTimer(); tLeft = 60.0; renderTimer();
+}
+
+function updateRubricTotal() {
+  const v1 = parseInt(document.getElementById('rb1').value);
+  const v2 = parseInt(document.getElementById('rb2').value);
+  const v3 = parseInt(document.getElementById('rb3').value);
+  const v4 = parseInt(document.getElementById('rb4').value);
+  document.getElementById('rbV1').textContent = v1 + 'đ';
+  document.getElementById('rbV2').textContent = v2 + 'đ';
+  document.getElementById('rbV3').textContent = v3 + 'đ';
+  document.getElementById('rbV4').textContent = v4 + 'đ';
+  document.getElementById('rbTotal').textContent = (v1 + v2 + v3 + v4) + ' / 100 điểm';
+}
+updateRubricTotal();
+
+let scores = JSON.parse(localStorage.getItem('cn8_hue_scores') || '[]');
+function renderLeaderboard() {
+  const tb = document.getElementById('leaderBody');
+  if (!scores.length) {
+    tb.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted);">Chưa có dữ liệu nhóm nào. Hãy nhập điểm bên trái và bấm Lưu!</td></tr>';
+    return;
+  }
+  scores.sort((a, b) => b.total - a.total);
+  tb.innerHTML = '';
+  scores.forEach((s, idx) => {
+    const medal = idx === 0 ? '🥇 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : (idx + 1);
+    const rank = s.total >= 90 ? 'Xuất sắc' : s.total >= 80 ? 'Tốt' : s.total >= 65 ? 'Khá' : 'Đạt';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${medal}</strong></td><td><strong>${s.group}</strong></td><td>${s.items}</td><td>${s.weight} g</td><td><strong style="color:var(--teal);">${s.total}/100</strong></td><td>${rank}</td>`;
+    tb.appendChild(tr);
+  });
+}
+renderLeaderboard();
+
+function saveGroupScore() {
+  const grp = document.getElementById('rbGroup').value.trim() || ('Nhóm ' + (scores.length + 1));
+  const items = document.getElementById('rbItems').value;
+  const weight = document.getElementById('rbWeight').value || 0;
+  const total = ['rb1','rb2','rb3','rb4'].reduce((s, id) => s + parseInt(document.getElementById(id).value), 0);
+  scores.push({ group: grp, items, weight, total });
+  localStorage.setItem('cn8_hue_scores', JSON.stringify(scores));
+  document.getElementById('rbGroup').value = '';
+  playTone(740, 0.14);
+  renderLeaderboard();
+}
+
+function clearScores() {
+  if (!confirm('Xóa toàn bộ bảng xếp hạng hiện tại?')) return;
+  scores = [];
+  localStorage.removeItem('cn8_hue_scores');
+  renderLeaderboard();
+}
+
+function exportCSV() {
+  if (!scores.length) { alert('Chưa có dữ liệu nhóm để xuất!'); return; }
+  let csv = '\uFEFFHang,Ten Nhom,So Vat Gap,Tai Trong (g),Tong Diem Rubric,Xep Loai\n';
+  scores.forEach((s, i) => {
+    const rank = s.total >= 90 ? 'Xuat sac' : s.total >= 80 ? 'Tot' : s.total >= 65 ? 'Kha' : 'Dat';
+    csv += `${i+1},"${s.group}","${s.items}",${s.weight},${s.total},"${rank}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Bang_Diem_Rubric_Robot_Thuy_Luc_CN8_NguyenThiAnhHue.csv';
+  a.click();
+}
+
+// ==================== TAB 3: 2D TECHNICAL BLUEPRINT & DIRECT PRINT ENGINE ====================
+let bpArmAngles = { sh: 45, el: -40, claw: 65 };
+
+function openBlueprintTabAndPrint(autoPrint) {
+  switchTab('blueprint', document.getElementById('nav-btn-blueprint'));
+  renderCn8Blueprint();
+  if (autoPrint) {
+    setTimeout(() => printCn8BlueprintDirectly(), 250);
+  }
+}
+
+function syncAnglesFromSimToBlueprint() {
+  bpArmAngles.sh = parseFloat(slShoulder.value) || 45;
+  bpArmAngles.el = parseFloat(slElbow.value) || -40;
+  bpArmAngles.claw = parseFloat(slClaw.value) || 65;
+  playTone(680, 0.12);
+  renderCn8Blueprint();
+}
+
+function resetBpParams() {
+  document.getElementById('bpViewMode').value = 'combined';
+  document.getElementById('bpL1').value = 180;
+  document.getElementById('bpL2').value = 150;
+  document.getElementById('bpH').value = 135;
+  document.getElementById('bpW').value = 32;
+  document.getElementById('bpBaseW').value = 200;
+  document.getElementById('bpHoleD').value = 4;
+  document.getElementById('bpShowGrid').checked = true;
+  document.getElementById('bpShowDims').checked = true;
+  document.getElementById('bpBwPrint').checked = false;
+  bpArmAngles = { sh: 45, el: -40, claw: 65 };
+  renderCn8Blueprint();
+}
+
+function drawDimLineSvg(x1, y1, x2, y2, text, offset = -14, color = '#0284c7') {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len;
+  const ny = dx / len;
+  const sx1 = x1 + nx * offset;
+  const sy1 = y1 + ny * offset;
+  const sx2 = x2 + nx * offset;
+  const sy2 = y2 + ny * offset;
+  const mx = (sx1 + sx2) / 2;
+  const my = (sy1 + sy2) / 2;
+  return `
+    <g stroke="${color}" stroke-width="1.2" fill="${color}">
+      <line x1="${x1}" y1="${y1}" x2="${sx1}" y2="${sy1}" stroke-dasharray="2,2" opacity="0.75"/>
+      <line x1="${x2}" y1="${y2}" x2="${sx2}" y2="${sy2}" stroke-dasharray="2,2" opacity="0.75"/>
+      <line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" marker-start="url(#bpArrowStart)" marker-end="url(#bpArrowEnd)"/>
+      <rect x="${mx - 26}" y="${my - 8}" width="52" height="15" rx="2" fill="#ffffff" stroke="none"/>
+      <text x="${mx}" y="${my + 3.5}" font-size="10" font-weight="bold" text-anchor="middle" stroke="none" fill="${color}">${text}</text>
+    </g>
+  `;
+}
+
+function drawRedHoleSvg(cx, cy, rPx, labelText, holeD, showDims, bw) {
+  const redCol = bw ? '#000000' : '#dc2626';
+  const fillCol = bw ? '#ffffff' : '#fee2e2';
+  return `
+    <g>
+      <line x1="${cx - rPx - 5}" y1="${cy}" x2="${cx + rPx + 5}" y2="${cy}" stroke="${redCol}" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="${cx}" y1="${cy - rPx - 5}" x2="${cx}" y2="${cy + rPx + 5}" stroke="${redCol}" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="${cx}" cy="${cy}" r="${rPx}" fill="${fillCol}" stroke="${redCol}" stroke-width="2"/>
+      <circle cx="${cx}" cy="${cy}" r="1.8" fill="${redCol}"/>
+      ${showDims && labelText ? `<text x="${cx}" y="${cy - rPx - 6}" font-size="9.5" font-weight="bold" fill="${redCol}" text-anchor="middle">${labelText}</text>` : ''}
+    </g>
+  `;
+}
+
+function renderCn8Blueprint() {
+  const svg = document.getElementById('cn8BlueprintSvg');
+  if (!svg) return;
+
+  const mode = document.getElementById('bpViewMode').value;
+  const grpName = document.getElementById('bpGroupName').value || 'Nhóm 1 – Lớp 8/1';
+  const scaleText = document.getElementById('bpScaleText').value;
+  const matText = document.getElementById('bpMaterial').value;
+  const L1 = parseFloat(document.getElementById('bpL1').value) || 180;
+  const L2 = parseFloat(document.getElementById('bpL2').value) || 150;
+  const H = parseFloat(document.getElementById('bpH').value) || 135;
+  const W = parseFloat(document.getElementById('bpW').value) || 32;
+  const baseW = parseFloat(document.getElementById('bpBaseW').value) || 200;
+  const holeD = parseFloat(document.getElementById('bpHoleD').value) || 4;
+  const showGrid = document.getElementById('bpShowGrid').checked;
+  const showDims = document.getElementById('bpShowDims').checked;
+  const bw = document.getElementById('bpBwPrint').checked;
+
+  document.getElementById('lblBpL1').textContent = L1 + ' mm';
+  document.getElementById('lblBpL2').textContent = L2 + ' mm';
+  document.getElementById('lblBpHW').textContent = `${H} / ${W} mm`;
+  document.getElementById('lblBpHole').textContent = `Ø${holeD} mm`;
+
+  const strokeMain = bw ? '#000000' : '#0f294a';
+  const fillPart = bw ? '#ffffff' : '#fef3c7';
+  const fillPart2 = bw ? '#ffffff' : '#e0f2fe';
+  const fillPart3 = bw ? '#ffffff' : '#dcfce7';
+  const dimCol = bw ? '#1e293b' : '#0284c7';
+  const redCol = bw ? '#000000' : '#dc2626';
+
+  let gridHtml = '';
+  if (showGrid) {
+    for (let x = 20; x < 980; x += 20) {
+      gridHtml += `<line x1="${x}" y1="15" x2="${x}" y2="605" stroke="${bw ? '#e2e8f0' : '#cbd5e1'}" stroke-width="${x % 100 === 0 ? '0.9' : '0.45'}"/>`;
+    }
+    for (let y = 15; y < 605; y += 20) {
+      gridHtml += `<line x1="15" y1="${y}" x2="985" y2="${y}" stroke="${bw ? '#e2e8f0' : '#cbd5e1'}" stroke-width="${y % 100 === 0 ? '0.9' : '0.45'}"/>`;
+    }
+  }
+
+  // Scale factor on canvas: 1 mm = 0.85 px for clean fitting
+  const s = 0.85;
+  const rHolePx = Math.max(4.5, holeD * 1.15);
+
+  // ---- LEFT SIDE (OR FULL): ORTHOGRAPHIC 2D ASSEMBLY DRAWING ----
+  let leftAssemblyHtml = '';
+  if (mode === 'combined' || mode === 'orthographic') {
+    const originX = mode === 'orthographic' ? 250 : 165;
+    const floorY = 395;
+    const bWpx = baseW * s;
+    const Hpx = H * s;
+    const Wpx = W * s;
+    const L1px = L1 * s;
+    const L2px = L2 * s;
+
+    const pivotA = { x: originX, y: floorY - 22 - Hpx + 16 };
+    const a1 = (-bpArmAngles.sh * Math.PI) / 180;
+    const pivotB = {
+      x: pivotA.x + L1px * Math.cos(a1),
+      y: pivotA.y + L1px * Math.sin(a1)
+    };
+    const a2 = (-(bpArmAngles.sh + bpArmAngles.el) * Math.PI) / 180;
+    const pivotC = {
+      x: pivotB.x + L2px * Math.cos(a2),
+      y: pivotB.y + L2px * Math.sin(a2)
+    };
+
+    // Cylinder 2 (Shoulder) attachment points
+    const cyl2A = { x: originX + 26, y: floorY - 22 };
+    const cyl2B = {
+      x: pivotA.x + 0.42 * L1px * Math.cos(a1),
+      y: pivotA.y + 0.42 * L1px * Math.sin(a1)
+    };
+
+    // Cylinder 3 (Elbow) attachment points
+    const cyl3A = {
+      x: pivotA.x + 0.38 * L1px * Math.cos(a1) - 12 * Math.sin(a1),
+      y: pivotA.y + 0.38 * L1px * Math.sin(a1) + 12 * Math.cos(a1)
+    };
+    const cyl3B = {
+      x: pivotB.x + 0.36 * L2px * Math.cos(a2),
+      y: pivotB.y + 0.36 * L2px * Math.sin(a2)
+    };
+
+    leftAssemblyHtml = `
+      <g>
+        <text x="${originX + 45}" y="38" font-size="12.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">
+          I. HÌNH CHIẾU ĐỨNG LẮP GHÉP 2D (TƯ THẾ ĐỘNG HỌC)
+        </text>
+
+        <!-- Mặt bàn chuẩn -->
+        <line x1="35" y1="${floorY}" x2="${mode === 'orthographic' ? 520 : 455}" y2="${floorY}" stroke="${strokeMain}" stroke-width="2.2"/>
+        <!-- #1 Đế cố định + Đối trọng + Mâm xoay -->
+        <rect x="${originX - bWpx / 2}" y="${floorY - 14}" width="${bWpx}" height="14" fill="${fillPart2}" stroke="${strokeMain}" stroke-width="2"/>
+        <rect x="${originX - bWpx / 2 + 8}" y="${floorY - 30}" width="42" height="16" fill="${bw ? '#e2e8f0' : '#cbd5e1'}" stroke="${strokeMain}" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="${originX - bWpx / 2 + 29}" y="${floorY - 19}" font-size="8.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">Đối trọng</text>
+        <rect x="${originX - 42}" y="${floorY - 22}" width="84" height="8" fill="${fillPart}" stroke="${strokeMain}" stroke-width="1.8"/>
+
+        <!-- #2 Trụ đứng hình thang đỡ khớp vai A -->
+        <polygon points="${originX - 26},${floorY - 22} ${originX + 26},${floorY - 22} ${originX + 16},${pivotA.y - 14} ${originX - 16},${pivotA.y - 14}"
+                 fill="${fillPart}" stroke="${strokeMain}" stroke-width="2"/>
+        <!-- Đường tâm trục đứng xoay đế -->
+        <line x1="${originX}" y1="${floorY + 12}" x2="${originX}" y2="${pivotA.y - 28}" stroke="${redCol}" stroke-width="1" stroke-dasharray="8,3,2,3"/>
+
+        <!-- Xi-lanh Kênh 2 (Đỏ: 5ml -> 10ml) -->
+        <line x1="${cyl2A.x}" y1="${cyl2A.y}" x2="${cyl2B.x}" y2="${cyl2B.y}" stroke="${bw ? '#334155' : '#dc2626'}" stroke-width="6" stroke-linecap="round"/>
+        <line x1="${cyl2A.x}" y1="${cyl2A.y}" x2="${cyl2B.x}" y2="${cyl2B.y}" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,3"/>
+
+        <!-- #3 Thanh cánh tay chính L1 (A -> B) -->
+        <g transform="translate(${pivotA.x}, ${pivotA.y}) rotate(${-bpArmAngles.sh})">
+          <rect x="${-Wpx / 2}" y="${-Wpx / 2}" width="${L1px + Wpx}" height="${Wpx}" rx="${Wpx / 2}"
+                fill="${fillPart}" stroke="${strokeMain}" stroke-width="2.2"/>
+          <line x1="0" y1="0" x2="${L1px}" y2="0" stroke="${redCol}" stroke-width="1" stroke-dasharray="6,3,2,3"/>
+          <circle cx="${0.42 * L1px}" cy="0" r="${rHolePx * 0.85}" fill="#ffffff" stroke="${redCol}" stroke-width="1.6"/>
+        </g>
+
+        <!-- Xi-lanh Kênh 3 (Xanh lá: 10ml -> 10ml) -->
+        <line x1="${cyl3A.x}" y1="${cyl3A.y}" x2="${cyl3B.x}" y2="${cyl3B.y}" stroke="${bw ? '#475569' : '#059669'}" stroke-width="5.5" stroke-linecap="round"/>
+
+        <!-- #4 Thanh cánh tay phụ L2 (B -> C) -->
+        <g transform="translate(${pivotB.x}, ${pivotB.y}) rotate(${-(bpArmAngles.sh + bpArmAngles.el)})">
+          <rect x="${-Wpx * 0.45}" y="${-Wpx * 0.42}" width="${L2px + Wpx * 0.9}" height="${Wpx * 0.84}" rx="${Wpx * 0.42}"
+                fill="${fillPart3}" stroke="${strokeMain}" stroke-width="2"/>
+          <line x1="0" y1="0" x2="${L2px}" y2="0" stroke="${redCol}" stroke-width="1" stroke-dasharray="6,3,2,3"/>
+          <circle cx="${0.36 * L2px}" cy="0" r="${rHolePx * 0.85}" fill="#ffffff" stroke="${redCol}" stroke-width="1.6"/>
+        </g>
+
+        <!-- #5 Hàm kẹp gắp tại C -->
+        <g transform="translate(${pivotC.x}, ${pivotC.y}) rotate(${-(bpArmAngles.sh + bpArmAngles.el)})">
+          <path d="M 0,0 L 22,-16 L 44,-10" fill="none" stroke="${strokeMain}" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 0,0 L 22,16 L 44,10" fill="none" stroke="${strokeMain}" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <!-- 3 Khớp bản lề A, B, C (Chấm đỏ Ø4mm) -->
+        ${drawRedHoleSvg(pivotA.x, pivotA.y, rHolePx, `Khớp A (Ø${holeD})`, holeD, showDims, bw)}
+        ${drawRedHoleSvg(pivotB.x, pivotB.y, rHolePx, `Khớp B (Ø${holeD})`, holeD, showDims, bw)}
+        ${drawRedHoleSvg(pivotC.x, pivotC.y, rHolePx, `Khớp C (Ø${holeD})`, holeD, showDims, bw)}
+
+        <!-- Mã số chi tiết tròn #1..#5 -->
+        <g font-size="10" font-weight="bold" text-anchor="middle">
+          <circle cx="${originX - bWpx / 2 + 16}" cy="${floorY + 18}" r="9" fill="#0f294a"/><text x="${originX - bWpx / 2 + 16}" y="${floorY + 21.5}" fill="#fff">#1</text>
+          <circle cx="${originX - 36}" cy="${floorY - 65}" r="9" fill="#0f294a"/><text x="${originX - 36}" y="${floorY - 61.5}" fill="#fff">#2</text>
+          <circle cx="${(pivotA.x + pivotB.x) / 2 - 14}" cy="${(pivotA.y + pivotB.y) / 2 - 18}" r="9" fill="#0f294a"/><text x="${(pivotA.x + pivotB.x) / 2 - 14}" y="${(pivotA.y + pivotB.y) / 2 - 14.5}" fill="#fff">#3</text>
+          <circle cx="${(pivotB.x + pivotC.x) / 2}" cy="${(pivotB.y + pivotC.y) / 2 - 20}" r="9" fill="#0f294a"/><text x="${(pivotB.x + pivotC.x) / 2}" y="${(pivotB.y + pivotC.y) / 2 - 16.5}" fill="#fff">#4</text>
+          <circle cx="${pivotC.x + 36}" cy="${pivotC.y - 22}" r="9" fill="#0f294a"/><text x="${pivotC.x + 36}" y="${pivotC.y - 18.5}" fill="#fff">#5</text>
+        </g>
+
+        ${showDims ? drawDimLineSvg(originX - bWpx / 2, floorY, originX + bWpx / 2, floorY, `${baseW} mm`, 26, dimCol) : ''}
+        ${showDims ? drawDimLineSvg(originX - bWpx / 2 - 10, floorY - 22, originX - bWpx / 2 - 10, pivotA.y, `H=${H}mm`, -24, dimCol) : ''}
+        ${showDims ? drawDimLineSvg(pivotA.x, pivotA.y, pivotB.x, pivotB.y, `L₁=${L1}mm`, -20, dimCol) : ''}
+        ${showDims ? drawDimLineSvg(pivotB.x, pivotB.y, pivotC.x, pivotC.y, `L₂=${L2}mm`, -18, dimCol) : ''}
+
+        <!-- Hình chiếu bằng Mâm xoay Đế (Phía dưới bên trái) -->
+        <g transform="translate(${originX}, 515)">
+          <text x="0" y="-58" font-size="11" font-weight="bold" fill="${strokeMain}" text-anchor="middle">
+            HÌNH CHIẾU BẰNG ĐẾ CỐ ĐỊNH (ĐẶT CÁCH VẬT d ≈ 22 CM)
+          </text>
+          <rect x="${-bWpx / 2}" y="-44" width="${bWpx}" height="88" fill="${fillPart2}" stroke="${strokeMain}" stroke-width="1.8"/>
+          <circle cx="0" cy="0" r="36" fill="${fillPart}" stroke="${strokeMain}" stroke-width="1.8" stroke-dasharray="5,3"/>
+          ${drawRedHoleSvg(0, 0, rHolePx, `Trục đế Ø${holeD}`, holeD, showDims, bw)}
+        </g>
+      </g>
+    `;
+
+    if (mode === 'orthographic') {
+      // Vẽ thêm sơ đồ nguyên lý 4 kênh Thủy lực Pascal ở nửa bên phải khi chọn chế độ Hình chiếu
+      leftAssemblyHtml += `
+        <g transform="translate(555, 55)">
+          <text x="200" y="-15" font-size="12.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">
+            II. SƠ ĐỒ BỐ TRÍ 4 KÊNH XI-LANH THỦY LỰC TRÊN BẢN VẼ
+          </text>
+          <rect x="0" y="0" width="405" height="340" rx="8" fill="#ffffff" stroke="${strokeMain}" stroke-width="1.8"/>
+          <text x="16" y="28" font-size="11.5" font-weight="bold" fill="${strokeMain}">• Đế cố định (Không xoay): HS tự đo khoảng cách d ≈ 22 cm đặt trước vật</text>
+          <text x="16" y="54" font-size="11.5" font-weight="bold" fill="${redCol}">• Kênh 2 (Đỏ - Khớp Vai A): Xi-lanh 5ml ➔ 10ml (Khuếch đại lực 1,56×)</text>
+          <text x="16" y="80" font-size="11.5" font-weight="bold" fill="${strokeMain}">• Kênh 3 (Xanh lá - Khuỷu B): Xi-lanh 10ml ➔ 10ml (Gập/duỗi tay phụ L₂)</text>
+          <text x="16" y="106" font-size="11.5" font-weight="bold" fill="${strokeMain}">• Kênh 4 (Vàng - Hàm kẹp C): Xi-lanh 5ml ➔ 5ml (Đóng/mở 2 ngàm kẹp)</text>
+
+          <rect x="16" y="125" width="372" height="195" rx="6" fill="${fillPart}" stroke="${strokeMain}" stroke-width="1.4"/>
+          <text x="202" y="148" font-size="11.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">QUY TẮC VẼ KỸ THUẬT & GIA CÔNG PHÔI (CÔNG NGHỆ 8)</text>
+          <text x="28" y="172" font-size="11" fill="${strokeMain}">1. Nét liền đậm: Đường bao thấy — Dùng dao rọc giấy/kéo cắt rời.</text>
+          <text x="28" y="196" font-size="11" fill="${strokeMain}">2. Nét gạch chấm mảnh + Chấm đỏ Ø${holeD}: Tâm lỗ trục quay bản lề.</text>
+          <text x="28" y="220" font-size="11" fill="${strokeMain}">3. Khoảng cách tâm lỗ đến mép đầu thanh ≥ ${Math.round(W/2)} mm để không rách bìa.</text>
+          <text x="28" y="244" font-size="11" fill="${strokeMain}">4. Bồi dán 2 lớp bìa carton 5 lớp vuông góc chiều sóng (90°).</text>
+          <text x="28" y="268" font-size="11" fill="${strokeMain}">5. Lồng đoạn ống hút nhựa cứng vào lỗ Ø${holeD} làm bạc lót giảm ma sát.</text>
+          <text x="28" y="294" font-size="11" font-weight="bold" fill="${redCol}">6. An toàn: 100% xi-lanh nhựa đã tháo bỏ kim tiêm trước khi thực hành!</text>
+        </g>
+      `;
+    }
+  }
+
+  // ---- RIGHT SIDE (OR FULL): 2D FLAT CUT-OUT TEMPLATES (PHÔI CẮT TRẢI PHẲNG 2D) ----
+  let cutoutTemplatesHtml = '';
+  if (mode === 'combined' || mode === 'cutout') {
+    const startX = mode === 'cutout' ? 55 : 485;
+    const scaleCut = mode === 'cutout' ? 1.35 : 0.92;
+    const cL1 = L1 * scaleCut;
+    const cL2 = L2 * scaleCut;
+    const cW = W * scaleCut;
+    const cH = H * scaleCut;
+
+    cutoutTemplatesHtml = `
+      <g transform="translate(${startX}, 22)">
+        <text x="${mode === 'cutout' ? 420 : 240}" y="16" font-size="12.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">
+          ${mode === 'cutout' ? 'BẢN VẼ PHÔI CẮT 2D TRẢI PHẲNG (DÙNG ĐỂ IN CẮT BÌA & DÙI LỖ Ø' + holeD + 'MM)' : 'II. BẢN VẼ PHÔI CẮT 2D TRẢI PHẲNG (CÓ TÂM LỖ Ø' + holeD + 'MM)'}
+        </text>
+
+        <!-- Phôi #3: Thanh cánh tay chính L1 (Cắt 02 thanh) -->
+        <g transform="translate(20, 48)">
+          <text x="0" y="-8" font-size="11" font-weight="bold" fill="${strokeMain}">
+            [#3] PHÔI THANH CÁNH TAY CHÍNH L₁ (Cắt 02 tấm bìa bồi kép – Dài tâm lỗ ${L1} mm × Rộng ${W} mm):
+          </text>
+          <rect x="0" y="0" width="${cL1 + cW}" height="${cW}" rx="${cW / 2}" fill="${fillPart}" stroke="${strokeMain}" stroke-width="2.2"/>
+          <line x1="0" y1="${cW / 2}" x2="${cL1 + cW}" y2="${cW / 2}" stroke="${redCol}" stroke-width="1" stroke-dasharray="8,3,2,3"/>
+          ${drawRedHoleSvg(cW / 2, cW / 2, rHolePx, `A (Ø${holeD})`, holeD, showDims, bw)}
+          ${drawRedHoleSvg(cW / 2 + 0.42 * cL1, cW / 2, rHolePx * 0.9, `Chốt K2 (Ø${holeD})`, holeD, showDims, bw)}
+          ${drawRedHoleSvg(cW / 2 + cL1, cW / 2, rHolePx, `B (Ø${holeD})`, holeD, showDims, bw)}
+          ${showDims ? drawDimLineSvg(cW / 2, cW, cW / 2 + cL1, cW, `Khoảng cách tâm lỗ L₁ = ${L1} mm`, 20, dimCol) : ''}
+          ${showDims ? drawDimLineSvg(cL1 + cW, 0, cL1 + cW, cW, `W=${W}`, 28, dimCol) : ''}
+        </g>
+
+        <!-- Phôi #4: Thanh cánh tay phụ L2 (Cắt 02 thanh) -->
+        <g transform="translate(20, 148)">
+          <text x="0" y="-8" font-size="11" font-weight="bold" fill="${strokeMain}">
+            [#4] PHÔI THANH CÁNH TAY PHỤ L₂ (Cắt 02 tấm bìa bồi kép – Dài tâm lỗ ${L2} mm × Rộng ${Math.round(W * 0.88)} mm):
+          </text>
+          <rect x="0" y="0" width="${cL2 + cW * 0.9}" height="${cW * 0.88}" rx="${cW * 0.44}" fill="${fillPart3}" stroke="${strokeMain}" stroke-width="2.2"/>
+          <line x1="0" y1="${cW * 0.44}" x2="${cL2 + cW * 0.9}" y2="${cW * 0.44}" stroke="${redCol}" stroke-width="1" stroke-dasharray="8,3,2,3"/>
+          ${drawRedHoleSvg(cW * 0.45, cW * 0.44, rHolePx, `B (Ø${holeD})`, holeD, showDims, bw)}
+          ${drawRedHoleSvg(cW * 0.45 + 0.36 * cL2, cW * 0.44, rHolePx * 0.9, `Chốt K3 (Ø${holeD})`, holeD, showDims, bw)}
+          ${drawRedHoleSvg(cW * 0.45 + cL2, cW * 0.44, rHolePx, `C (Ø${holeD})`, holeD, showDims, bw)}
+          ${showDims ? drawDimLineSvg(cW * 0.45, cW * 0.88, cW * 0.45 + cL2, cW * 0.88, `Khoảng cách tâm lỗ L₂ = ${L2} mm`, 20, dimCol) : ''}
+        </g>
+
+        <!-- Phôi #2: Vách trụ đứng Hình thang cân (Cắt 02 tấm) -->
+        <g transform="translate(20, 246)">
+          <text x="0" y="-8" font-size="11" font-weight="bold" fill="${strokeMain}">
+            [#2] PHÔI TRỤ ĐỨNG ĐỠ VAI HÌNH THANG (Cắt 02 vách đứng – Cao H = ${H} mm, Đáy 70 mm, Đỉnh 36 mm):
+          </text>
+          <polygon points="0,12 18,0 ${cH},0 ${cH},70 18,70 0,58" fill="${fillPart2}" stroke="${strokeMain}" stroke-width="2.2"/>
+          <line x1="0" y1="35" x2="${cH}" y2="35" stroke="${redCol}" stroke-width="1" stroke-dasharray="8,3,2,3"/>
+          ${drawRedHoleSvg(22, 35, rHolePx, `Tâm vai A (Ø${holeD})`, holeD, showDims, bw)}
+          ${drawRedHoleSvg(cH - 18, 52, rHolePx * 0.85, `Chốt xi-lanh K2`, holeD, showDims, bw)}
+          ${showDims ? drawDimLineSvg(0, 70, cH, 70, `Chiều cao trụ H = ${H} mm`, 20, dimCol) : ''}
+        </g>
+
+        <!-- Phôi #5 & #6: Hàm kẹp gắp 2 ngàm & Tai gắn xi-lanh -->
+        <g transform="translate(${mode === 'cutout' ? 470 : 245}, 246)">
+          <text x="0" y="-8" font-size="11" font-weight="bold" fill="${strokeMain}">
+            [#5] PHÔI HÀM KẸP (×2) & [#6] VẤU ĐỠ XI-LANH (×4):
+          </text>
+          <!-- Ngàm kẹp chữ L có rãnh trượt -->
+          <polygon points="0,12 45,0 105,0 105,22 52,22 36,46 0,46" fill="${fillPart}" stroke="${strokeMain}" stroke-width="2"/>
+          ${drawRedHoleSvg(18, 28, rHolePx * 0.9, `C (Ø${holeD})`, holeD, false, bw)}
+          ${drawRedHoleSvg(44, 14, rHolePx * 0.8, '', holeD, false, bw)}
+          <!-- Vấu đỡ xi-lanh -->
+          <g transform="translate(128, 4)">
+            <polygon points="0,42 10,0 44,0 54,42" fill="${fillPart3}" stroke="${strokeMain}" stroke-width="2"/>
+            ${drawRedHoleSvg(27, 18, rHolePx * 0.9, `Ø${holeD}`, holeD, showDims, bw)}
+            <text x="27" y="56" font-size="9.5" font-weight="bold" fill="${strokeMain}" text-anchor="middle">Vấu A/B (35×30mm)</text>
+          </g>
+        </g>
+      </g>
+    `;
+  }
+
+  // ---- STANDARD TECHNICAL DRAWING TITLE BLOCK (KHUNG TÊN BẢN VẼ CÔNG NGHỆ 8) ----
+  const titleBlockHtml = `
+    <g transform="translate(485, 445)">
+      <rect x="0" y="0" width="495" height="155" fill="#ffffff" stroke="${strokeMain}" stroke-width="2.4"/>
+      <line x1="0" y1="38" x2="495" y2="38" stroke="${strokeMain}" stroke-width="1.6"/>
+      <line x1="0" y1="78" x2="495" y2="78" stroke="${strokeMain}" stroke-width="1.4"/>
+      <line x1="0" y1="116" x2="495" y2="116" stroke="${strokeMain}" stroke-width="1.4"/>
+      <line x1="255" y1="38" x2="255" y2="155" stroke="${strokeMain}" stroke-width="1.4"/>
+      <line x1="380" y1="38" x2="380" y2="116" stroke="${strokeMain}" stroke-width="1.4"/>
+
+      <text x="247" y="16" font-size="10" font-weight="bold" fill="${redCol}" text-anchor="middle">
+        KHUNG TÊN BẢN VẼ KỸ THUẬT 2D (TIÊU CHUẨN TRÌNH BÀY BẢN VẼ CÔNG NGHỆ 8)
+      </text>
+      <text x="247" y="32" font-size="13" font-weight="bold" fill="${strokeMain}" text-anchor="middle">
+        CÁNH TAY ROBOT THỦY LỰC 4 BẬC TỰ DO (L₁=${L1}mm, L₂=${L2}mm)
+      </text>
+
+      <text x="10" y="54" font-size="10" fill="#475569">Người vẽ / Nhóm thực hiện:</text>
+      <text x="10" y="71" font-size="11.5" font-weight="bold" fill="${strokeMain}">${grpName}</text>
+
+      <text x="265" y="54" font-size="10" fill="#475569">Tỉ lệ bản vẽ:</text>
+      <text x="265" y="71" font-size="11" font-weight="bold" fill="${dimCol}">${scaleText}</text>
+
+      <text x="390" y="54" font-size="10" fill="#475569">Đơn vị / Lỗ trục:</text>
+      <text x="390" y="71" font-size="11" font-weight="bold" fill="${redCol}">mm | Ø${holeD} mm</text>
+
+      <text x="10" y="94" font-size="10" fill="#475569">Vật liệu chế tạo chính:</text>
+      <text x="10" y="110" font-size="10.8" font-weight="bold" fill="${strokeMain}">${matText}</text>
+
+      <text x="265" y="94" font-size="10" fill="#475569">Cấu hình Vai (Kênh 2):</text>
+      <text x="265" y="110" font-size="10.8" font-weight="bold" fill="${redCol}">5ml ➔ 10ml (Lợi lực 1,56×)</text>
+
+      <text x="390" y="94" font-size="10" fill="#475569">Bản vẽ số:</text>
+      <text x="390" y="110" font-size="11" font-weight="bold" fill="${strokeMain}">CN8-KT-01</text>
+
+      <text x="10" y="133" font-size="10" fill="#475569">Trường / Tổ chuyên môn:</text>
+      <text x="10" y="149" font-size="11" font-weight="bold" fill="${strokeMain}">THCS Nguyễn Du – Tổ Tin – Công nghệ</text>
+
+      <text x="265" y="133" font-size="10" fill="#475569">Giáo viên hướng dẫn & Duyệt bản vẽ:</text>
+      <text x="265" y="149" font-size="11.5" font-weight="bold" fill="${strokeMain}">Cô Nguyễn Thị Ánh Huệ</text>
+    </g>
+  `;
+
+  svg.innerHTML = `
+    <defs>
+      <marker id="bpArrowStart" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 10 1 L 0 5 L 10 9 z" fill="${dimCol}"/>
+      </marker>
+      <marker id="bpArrowEnd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="${dimCol}"/>
+      </marker>
+    </defs>
+    <!-- Viền khung bản vẽ tiêu chuẩn A4 -->
+    <rect x="8" y="8" width="984" height="604" fill="#ffffff" stroke="${strokeMain}" stroke-width="2.8"/>
+    <rect x="14" y="14" width="972" height="592" fill="none" stroke="${strokeMain}" stroke-width="1"/>
+    ${gridHtml}
+    ${leftAssemblyHtml}
+    ${cutoutTemplatesHtml}
+    ${titleBlockHtml}
+  `;
+
+  // Render Cutlist Table below SVG
+  const tbody = document.getElementById('bpCutlistTbody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td style="text-align:center; font-weight:800; color:var(--navy);">#1</td>
+        <td><strong>Tấm Đế phẳng cố định (Không xoay)</strong></td>
+        <td><strong>${baseW} × ${baseW} mm</strong> (Bìa carton 5 lớp bồi kép)</td>
+        <td>01 tấm</td>
+        <td>Đặt cố định cách vật <b>d ≈ 22 cm</b>; gắn chặt trụ vai và đặt đối trọng ~300g phía sau đế.</td>
+      </tr>
+      <tr>
+        <td style="text-align:center; font-weight:800; color:var(--navy);">#2</td>
+        <td><strong>Má Trụ đứng đỡ Khớp Vai (Hình thang)</strong></td>
+        <td>Cao <strong>${H} mm</strong> × Đáy <strong>70 mm</strong> (Đỉnh 36 mm)</td>
+        <td>02 tấm (bồi kép)</td>
+        <td>Khoan lỗ Khớp Vai A (<b>Ø${holeD} mm</b>) cách đỉnh 18 mm; dán ke vuông góc 90° với mâm xoay.</td>
+      </tr>
+      <tr>
+        <td style="text-align:center; font-weight:800; color:var(--red);">#3</td>
+        <td><strong>Thanh Cánh tay chính L₁ (Vai A ➔ Khuỷu B)</strong></td>
+        <td>Dài tổng <strong>${L1 + W} mm</strong> × Bản rộng <strong>${W} mm</strong></td>
+        <td>02 thanh (bồi 2 lớp)</td>
+        <td>Khoảng cách 2 tâm lỗ A–B đúng <b>${L1} mm</b>; lỗ gắn xi-lanh Kênh 2 (Đỏ) cách A <b>${Math.round(L1 * 0.42)} mm</b>.</td>
+      </tr>
+      <tr>
+        <td style="text-align:center; font-weight:800; color:var(--green);">#4</td>
+        <td><strong>Thanh Cánh tay phụ L₂ (Khuỷu B ➔ Cổ tay C)</strong></td>
+        <td>Dài tổng <strong>${L2 + Math.round(W * 0.9)} mm</strong> × Rộng <strong>${Math.round(W * 0.88)} mm</strong></td>
+        <td>02 thanh (bồi 2 lớp)</td>
+        <td>Khoảng cách 2 tâm lỗ B–C đúng <b>${L2} mm</b>; lỗ gắn xi-lanh Kênh 3 (Xanh lá) cách B <b>${Math.round(L2 * 0.36)} mm</b>.</td>
+      </tr>
+      <tr>
+        <td style="text-align:center; font-weight:800; color:var(--amber);">#5 & #6</td>
+        <td><strong>Hàm Kẹp gắp 2 ngàm & Vấu đỡ Xi-lanh</strong></td>
+        <td>Ngàm <strong>95 × 32 mm</strong> | Vấu <strong>35 × 30 mm</strong></td>
+        <td>02 ngàm + 04 vấu</td>
+        <td>Dùi lỗ <b>Ø${holeD} mm</b> lắp que tre + ống hút; dán mút xốp nhám vào lòng 2 ngàm kẹp.</td>
+      </tr>
+    `;
+  }
+}
+
+function printCn8BlueprintDirectly() {
+  renderCn8Blueprint();
+  window.print();
+}
+
+function openCn8PrintPopup() {
+  renderCn8Blueprint();
+  const sheetHtml = document.getElementById('printable-blueprint-sheet').innerHTML;
+  const win = window.open('', '_blank', 'width=1120,height=800');
+  if (!win) {
+    window.print();
+    return;
+  }
+  win.document.write(`<!DOCTYPE html>
+  <html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <title>In Bản Vẽ Kỹ Thuật 2D – Cánh Tay Robot Thủy Lực Công Nghệ 8</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 14px; color: #0f172a; background: #fff; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+      th, td { border: 1px solid #334155; padding: 6px 8px; text-align: left; }
+      th { background: #0f294a; color: #fff; }
+      svg { width: 100%; height: auto; border: 1.5px solid #0f294a; }
+      .print-bar { display:flex; justify-content:space-between; align-items:center; background:#ecfdf5; border:1.5px solid #059669; padding:10px 14px; border-radius:8px; margin-bottom:12px; }
+      .print-btn { background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:13px; }
+      @media print {
+        @page { size: A4 landscape; margin: 8mm; }
+        .print-bar { display: none !important; }
+        body { margin: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="print-bar">
+      <span>🖨️ <strong>Bản vẽ kỹ thuật 2D chuẩn A4 ngang:</strong> Bấm nút bên phải hoặc nhấn <b>Ctrl + P</b> để in trực tiếp ra máy in hoặc lưu PDF.</span>
+      <button class="print-btn" onclick="window.print()">🖨️ In Bản Vẽ Ngay (Ctrl+P)</button>
+    </div>
+    ${sheetHtml}
+    <script>setTimeout(() => window.print(), 350);<\/script>
+  </body>
+  </html>`);
+  win.document.close();
+}
+
+function downloadCn8BlueprintSVG() {
+  renderCn8Blueprint();
+  const svgEl = document.getElementById('cn8BlueprintSvg');
+  const serializer = new XMLSerializer();
+  let src = serializer.serializeToString(svgEl);
+  if (!src.includes('xmlns="http://www.w3.org/2000/svg"')) {
+    src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  const blob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Ban_Ve_2D_Canh_Tay_Robot_Thuy_Luc_CN8.svg';
+  a.click();
+}
+
+function downloadCn8BlueprintPNG() {
+  renderCn8Blueprint();
+  const svgEl = document.getElementById('cn8BlueprintSvg');
+  const serializer = new XMLSerializer();
+  let src = serializer.serializeToString(svgEl);
+  const img = new Image();
+  const svgBlob = new Blob([src], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2000;
+    canvas.height = 1240;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+    const a = document.createElement('a');
+    a.download = 'Ban_Ve_2D_Canh_Tay_Robot_Thuy_Luc_CN8.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  };
+  img.src = url;
+}
+
+renderCn8Blueprint();
+
+</script>
+</body>
+</html>
